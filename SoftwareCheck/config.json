@@ -1,0 +1,8 @@
+{
+    "to":"LikePatchMyPC@rprokhorov.ru",
+    "DistribPath":"\\\\SCCMServer\\Sources\\Applications\\Wireshark",
+    "ProxyURL" : "http://ProxyServer.contoso.com:8080",
+    "PSADTTemplatePath" : "\\SCCMServer.contoso.com\\Sources\\Applications\\_PSADT Template\\%AppName% %Version%\\*",
+    "ProviderMachineName" : "SCCMServerName",
+    "SiteCode":"RPV"
+}
