@@ -4,49 +4,47 @@
 # Получение последней версии Git Extensions
 function Get-GitExtensions ($URLPage){
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-    $result = Invoke-WebRequest $URLPage -UseBasicParsing -Proxy $ProxyURL -ProxyUseDefaultCredentials
-    (($result.Links | Where-Object {$_.outerHTML -like '*version v*'}).outerHTML -match 'Version v[[0-9\.]+' | Out-Null)
-    $global:Version = $Matches[0] -replace 'Version v'
+    $result = Invoke-WebRequest $URLPage -UseBasicParsing #-Proxy $ProxyURL -ProxyUseDefaultCredentials
     (($result.Links | Where-Object {$_.href -like '*.msi'}).href -match '[0-9\.]+msi' | Out-Null)
-    $global:build = $Matches[0] -replace '.msi'
+    $script:Version = $Matches[0] -replace '.msi'
     $DownLoadURL = 'https://github.com'+($result.Links | ? {$_.href -like '*.msi'}).href
-    $global:FileName = $global:FileName -replace '%version%', $global:version
+    $script:FileName = $script:FileName -replace '%version%', $script:version
     Write-Host "-===========-" -ForegroundColor Green
-    Write-Host "Product:  $global:Application"
+    Write-Host "Product:  $script:Application"
     Write-Host "Search link: $URLPage"
     Write-Host "Version: "$version
     Write-host "Download Link:    "$DownLoadURL
     Write-Host "Download path: $DistribPath\$version\$FileName"
-    $global:body  = "Product:  $global:Application `rSearch link: $URLPage `rVersion: $version`rLink: $DownLoadURL `rDownload path: $DistribPath\$version\$FileName `r"
+    $script:body  = "Product:  $script:Application `rSearch link: $URLPage `rVersion: $version`rLink: $DownLoadURL `rDownload path: $DistribPath\$version\$FileName `r"
     if (Test-Path "filesystem::$DistribPath\$version\")
     {
         write-host "Версия уже есть"
-        $global:NewVersion = $false
+        $script:NewVersion = $false
     }
     Else
     {
-        $global:NewVersion = $true
+        $script:NewVersion = $true
         Write-Host "Начинаю закачивание новой версии"
         Set-Location C:
         #cd C:
         New-Item -ItemType Directory -Path "$DistribPath\$version"  -Force
         # Копирую шаблон PSADT
         Copy-Item $PSADTTemplatePath -Destination "$DistribPath\$version" -Recurse
-        Copy-Item -Path "$DistribPath\$version\SupportFiles\Config files\$global:templatename" -Destination "$DistribPath\$version\SupportFiles\Config.ps1" -Force
+        Copy-Item -Path "$DistribPath\$version\SupportFiles\Config files\$script:templatename" -Destination "$DistribPath\$version\SupportFiles\Config.ps1" -Force
         (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appVersion%', "$version") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
         (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%FileName%', "$FileName") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
-        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%Publisher%', "$global:Publisher") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
-        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appName%', "$global:Application") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
-        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appDetectionVersion%', "$global:build") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
-        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appDetectionName%', "$global:Application_detection") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%Publisher%', "$script:Publisher") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appName%', "$script:Application") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appDetectionVersion%', "$script:Version") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appDetectionName%', "$script:Application_detection") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
         
-        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appVersion%', "$global:Version") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
-        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appDetectionVersion%', "$global:build") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
-        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appName%', "$global:Application") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
-        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appDetectionName%', "$global:Application_detection") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appVersion%', "$script:Version") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appDetectionVersion%', "$script:Version") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appName%', "$script:Application") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appDetectionName%', "$script:Application_detection") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
         
         $destination = "$DistribPath\$version\Files\$FileName"
-        Invoke-WebRequest -Uri $DownLoadURL -OutFile $destination -UseBasicParsing -Proxy $ProxyURL -ProxyUseDefaultCredentials -UserAgent [Microsoft.PowerShell.Commands.PSUserAgent]::FireFox
+        Invoke-WebRequest -Uri $DownLoadURL -OutFile $destination -UseBasicParsing -UserAgent [Microsoft.PowerShell.Commands.PSUserAgent]::FireFox #-Proxy $ProxyURL -ProxyUseDefaultCredentials 
     }
     Write-Host "-===========-" -ForegroundColor Green
 }
@@ -88,7 +86,7 @@ function New-Application {
     #endregion
 
     #Create Application
-    New-CMApplication -Name $ApplicationName -LocalizedApplicationName $global:Application -Description $Description -SoftwareVersion $Version -Publisher $Publisher -LocalizedDescription $LocalizedDescription -IconLocationFile $IconLocationFile
+    New-CMApplication -Name $ApplicationName -LocalizedApplicationName $script:Application -Description $Description -SoftwareVersion $Version -Publisher $Publisher -LocalizedDescription $LocalizedDescription -IconLocationFile $IconLocationFile
     Set-CMApplication -Name $ApplicationName -UserCategory $UserCategory -AutoInstall $true
     $DeploymentTypeProperties = @{
     InstallCommand = $InstallCommand
@@ -108,6 +106,7 @@ function New-Application {
     # Move Application in Folder
     if ($DirAppinConsole -ne $null) {
         $Apps = Get-WmiObject -Namespace Root\SMS\Site_$SiteCode -Class SMS_ApplicationLatest -Filter "LocalizedDisplayName='$ApplicationName'"
+        Create-CollectionFolder -FolderName $DirAppinConsole -SCCMSiteName $SiteCode -ErrorAction SilentlyContinue
         $TargetFolderID = Get-WmiObject -Namespace Root\SMS\Site_$SiteCode -Class SMS_ObjectContainerNode -Filter "ObjectType='6000' and Name='$DirAppinConsole'"
         $CurrentFolderID = 0
         $ObjectTypeID = 6000
@@ -139,7 +138,7 @@ function New-Application {
     Set-Location $SaveLocation
 
     # Generate Mail Body
-    $global:Body += @"
+    $script:Body += @"
 Created application '$ApplicationName'.
 "@
 #Deployment assigned to '$TestCollection' starts on $DateTest.
@@ -157,7 +156,7 @@ function Send-EmailAnonymously {
         $SMTPServer = "SMTPServer.contoso.com",
         $From = "SCCMServer@contoso.com",
         [PARAMETER(Mandatory=$True)]$To,
-        $Subject = "Available new version $global:Application",
+        $Subject = "Available new version $script:Application",
         $Body
     )
     $PWord = ConvertTo-SecureString -String "anonymous" -AsPlainText -Force
@@ -165,55 +164,84 @@ function Send-EmailAnonymously {
     Send-MailMessage -From $From -To $To -Subject $Subject -Body $Body -SmtpServer $SMTPServer -Credential $Creds -Encoding Default -Priority High
 }
 
+Function Create-CollectionFolder
+{
+    param (
+        [PARAMETER(Mandatory=$True)]$FolderName,
+        [PARAMETER(Mandatory=$True)]$SCCMSiteName
+    )
+    #Object type 2 - Package Folder
+    #Object type 7 - Query Folder
+    #Object type 9 - Software Metering Folder
+    #Object type 14 - Operating System Installers Folder
+    #Object type 17 - State Migration GFolder
+    #Object type 18 - Image Package Folder
+    #Object type 19 - Boot Image Folder
+    #Object type 20 - Task Sequence Folder
+    #Object type 23 - Driver Package Folder
+    #Object type 25 - Driver Folder
+    #Object type 2011 - Configuration Baseline Folder
+    #Object type 5000 - Device Collection Folder
+    #Object type 5001 - User Collection Folder
+    #Object type 6000 - Application Folder
+    #Object type 6001 - Configuration Item Folder
+    $CollectionFolderArgs = @{
+        Name = $FolderName;
+        ObjectType = "6000";
+        ParentContainerNodeid = "0"
+    }
+    Set-WmiInstance -Class SMS_ObjectContainerNode -arguments $CollectionFolderArgs -namespace "root\SMS\Site_$SCCMSiteName" | Out-Null
+}
+
 #endregion Function
 
 #region Variables
 $Config = Get-Content "$PSScriptRoot\config.json" | ConvertFrom-Json 
-$global:Application = "Git Extensions"
-$global:Application_detection = 'Git Extensions'
-$global:DirAppinConsole = "Git Extensions"
-$global:DistribPath = "$($Config.DistribPath)\Git Extensions"
-$global:FileName = 'Git-Extensions-%version%.msi'
+$script:Application = "Git Extensions"
+$script:Application_detection = 'Git Extensions'
+$script:DirAppinConsole = "Git Extensions"
+$script:DistribPath = "$($Config.DistribPath)Git Extensions"
+$script:FileName = 'Git-Extensions-%version%.msi'
 $URLPage = 'https://github.com/gitextensions/gitextensions/releases/latest'
-$global:Version = '1.1'
+$script:Version = '1.1'
 $ProxyURL = $Config.ProxyURL
-$global:PSADTTemplatePath = $Config.PSADTTemplatePath
-$global:body = ''
-$global:NewVersion = $null
-$global:Publisher = 'Git Extensions Team'
-$global:templatename = 'Config_GitExtensions_template.ps1'
+$script:PSADTTemplatePath = "$((get-item $psscriptroot).parent.FullName)\Template\*" #"$($Config.PSADTTemplatePath)\*"
+$script:body = ''
+$script:NewVersion = $null
+$script:Publisher = 'Git Extensions Team'
+$script:templatename = 'Config_GitExtensions_template.ps1'
 $To= $Config.To
 #endregion Variables
 
 Try{
     Get-GitExtensions -URLPage $URLPage
-    if ($global:NewVersion -eq $true)
+    if ($script:NewVersion -eq $true)
     {
         #New-Application
-        $global:ApplicationName = "$global:Application $global:version"
+        $script:ApplicationName = "$script:Application $script:version"
         $NewApplication_Properties = @{
-            ApplicationName = "$global:ApplicationName"
-            SourcesPath = "$global:DistribPath\$global:version"
+            ApplicationName = "$script:ApplicationName"
+            SourcesPath = "$script:DistribPath\$script:version"
             ProviderMachineName = $Config.ProviderMachineName
             SiteCode = $Config.SiteCode
-            Application = $global:Application
-            DirAppinConsole = $global:DirAppinConsole
-            Description = "$global:Application application version: $($global:version) `rCreated by Script"
-            Version = $global:Version
-            Publisher = $global:Publisher
+            Application = $script:Application
+            DirAppinConsole = $script:DirAppinConsole
+            Description = "$script:Application application version: $($script:version) `rCreated by Script"
+            Version = $script:Version
+            Publisher = $script:Publisher
             InstallCommand = "Deploy-Application.exe"
             DPGroup = 'Distribution Point Group'
             TestCollection = "DA | $Application | Pilot | Required"
             ProdCollection = "DA | $Application | Prod | Required"
             TestUserCollection = "ALL | TEST | Application Catalog | Standard user"
-            MSIFileName = '$global:FileName'
+            MSIFileName = '$script:FileName'
             UninstallCommand = """Deploy-Application.exe"" -DeploymentType Uninstall"
             LocalizedDescription = "Git Extensions - визуальный клиент системы управления версиями Git, позволяющий использовать Git без использования консольного интерфейса. "
-            IconLocationFile = "$DistribPath\icon.png"
+            IconLocationFile = "$((get-item $psscriptroot).parent.FullName)\Applications\$Application\icon.png"
             Scriptpath = "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
         }
         New-Application @NewApplication_Properties
-        Send-EmailAnonymously -Body $global:Body -To $To
+        Send-EmailAnonymously -Body $script:Body -To $To
     }
 }
 catch{}

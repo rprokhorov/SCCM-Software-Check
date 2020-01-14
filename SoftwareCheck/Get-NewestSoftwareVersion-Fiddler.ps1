@@ -4,50 +4,50 @@
 # Получение последней версии Fiddler
 function Get-Fiddler ($URLPage){
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-    $result = Invoke-WebRequest $URLPage -UseBasicParsing -Proxy $ProxyURL -ProxyUseDefaultCredentials
+    $result = Invoke-WebRequest $URLPage -UseBasicParsing #-Proxy $ProxyURL -ProxyUseDefaultCredentials
     ($result.Links | Where-Object {$_.outerHTML -match 'FIddler v[0-9]'})[0].outerHTML -match "v[0-9\.]+"
-    $global:Version = $Matches[0] -replace 'v'
+    $script:Version = $Matches[0] -replace 'v'
     
     $DownLoadURL = 'https://telerik-fiddler.s3.amazonaws.com/fiddler/FiddlerSetup.exe'
-    $global:FileName = $global:FileName -replace '%version%', $global:version
+    $script:FileName = $script:FileName -replace '%version%', $script:version
     Write-Host "-===========-" -ForegroundColor Green
-    Write-Host "Product:  $global:Application"
+    Write-Host "Product:  $script:Application"
     Write-Host "Search link: $URLPage"
     Write-Host "Version: "$version
     Write-host "Download Link:    "$DownLoadURL
     Write-Host "Download path: $DistribPath\$version\$FileName"
-    $global:body  = "Product:  $global:Application `rSearch link: $URLPage `rVersion: $version`rLink: $DownLoadURL `rDownload path: $DistribPath\$version\$FileName `r"
+    $script:body  = "Product:  $script:Application `rSearch link: $URLPage `rVersion: $version`rLink: $DownLoadURL `rDownload path: $DistribPath\$version\$FileName `r"
     if (Test-Path "filesystem::$DistribPath\$version\")
     {
         write-host "Версия уже есть"
-        $global:NewVersion = $false
+        $script:NewVersion = $false
     }
     Else
     {
-        $global:NewVersion = $true
+        $script:NewVersion = $true
         Write-Host "Начинаю закачивание новой версии"
         Set-Location C:
         #cd C:
         New-Item -ItemType Directory -Path "$DistribPath\$version"  -Force
         # Копирую шаблон PSADT
         Copy-Item $PSADTTemplatePath -Destination "$DistribPath\$version" -Recurse
-        Copy-Item -Path "$DistribPath\$version\SupportFiles\Config files\$global:templatename" -Destination "$DistribPath\$version\SupportFiles\Config.ps1" -Force
+        Copy-Item -Path "$DistribPath\$version\SupportFiles\Config files\$script:templatename" -Destination "$DistribPath\$version\SupportFiles\Config.ps1" -Force
         $destination = "$DistribPath\$version\Files\$FileName"
-        Invoke-WebRequest -Uri $DownLoadURL -OutFile $destination -UseBasicParsing -Proxy $ProxyURL -ProxyUseDefaultCredentials -UserAgent [Microsoft.PowerShell.Commands.PSUserAgent]::FireFox
-        $global:build =  (Get-ItemProperty -Path $destination).VersionInfo.ProductVersion
-        Copy-Item -Path "$($Config.DistribPath)\Fiddler\Detection\DetectionMethod.ps1" -Destination "$DistribPath\$version\SupportFiles" -Force
-
+        Invoke-WebRequest -Uri $DownLoadURL -OutFile $destination -UseBasicParsing -UserAgent [Microsoft.PowerShell.Commands.PSUserAgent]::FireFox #-Proxy $ProxyURL -ProxyUseDefaultCredentials 
+        $script:build =  (Get-ItemProperty -Path $destination).VersionInfo.ProductVersion
+        Copy-Item -Path "$((get-item $psscriptroot).parent.FullName)\Applications\$Application\Detection\DetectionMethod.ps1" -Destination "$DistribPath\$version\SupportFiles" -Force
+        
         (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appVersion%', "$version") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
         (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%FileName%', "$FileName") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
-        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%Publisher%', "$global:Publisher") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
-        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appName%', "$global:Application") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
-        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appDetectionVersion%', "$global:build") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
-        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appDetectionName%', "$global:Application_detection") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%Publisher%', "$script:Publisher") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appName%', "$script:Application") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appDetectionVersion%', "$script:build") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appDetectionName%', "$script:Application_detection") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
         
-        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appVersion%', "$global:Version") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
-        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appDetectionVersion%', "$global:build") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
-        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appName%', "$global:Application") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
-        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appDetectionName%', "$global:Application_detection") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appVersion%', "$script:Version") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appDetectionVersion%', "$script:build") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appName%', "$script:Application") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appDetectionName%', "$script:Application_detection") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
         
         
         
@@ -93,7 +93,7 @@ function New-Application {
     #endregion
 
     #Create Application
-    New-CMApplication -Name $ApplicationName -LocalizedApplicationName $global:Application -Description $Description -SoftwareVersion $Version -Publisher $Publisher -LocalizedDescription $LocalizedDescription -IconLocationFile $IconLocationFile
+    New-CMApplication -Name $ApplicationName -LocalizedApplicationName $script:Application -Description $Description -SoftwareVersion $Version -Publisher $Publisher -LocalizedDescription $LocalizedDescription -IconLocationFile $IconLocationFile
     Set-CMApplication -Name $ApplicationName -UserCategory $UserCategory -AutoInstall $true
     $DeploymentTypeProperties = @{
     InstallCommand = $InstallCommand
@@ -113,6 +113,7 @@ function New-Application {
     # Move Application in Folder
     if ($DirAppinConsole -ne $null) {
         $Apps = Get-WmiObject -Namespace Root\SMS\Site_$SiteCode -Class SMS_ApplicationLatest -Filter "LocalizedDisplayName='$ApplicationName'"
+        Create-CollectionFolder -FolderName $DirAppinConsole -SCCMSiteName $SiteCode -ErrorAction SilentlyContinue
         $TargetFolderID = Get-WmiObject -Namespace Root\SMS\Site_$SiteCode -Class SMS_ObjectContainerNode -Filter "ObjectType='6000' and Name='$DirAppinConsole'"
         $CurrentFolderID = 0
         $ObjectTypeID = 6000
@@ -144,7 +145,7 @@ function New-Application {
     Set-Location $SaveLocation
 
     # Generate Mail Body
-    $global:Body += @"
+    $script:Body += @"
 Created application '$ApplicationName'.
 "@
 #Deployment assigned to '$TestCollection' starts on $DateTest.
@@ -162,7 +163,7 @@ function Send-EmailAnonymously {
         $SMTPServer = "SMTPServer.contoso.com",
         $From = "SCCMServer@contoso.com",
         [PARAMETER(Mandatory=$True)]$To,
-        $Subject = "Available new version $global:Application",
+        $Subject = "Available new version $script:Application",
         $Body
     )
     $PWord = ConvertTo-SecureString -String "anonymous" -AsPlainText -Force
@@ -170,55 +171,84 @@ function Send-EmailAnonymously {
     Send-MailMessage -From $From -To $To -Subject $Subject -Body $Body -SmtpServer $SMTPServer -Credential $Creds -Encoding Default -Priority High
 }
 
+Function Create-CollectionFolder
+{
+    param (
+        [PARAMETER(Mandatory=$True)]$FolderName,
+        [PARAMETER(Mandatory=$True)]$SCCMSiteName
+    )
+    #Object type 2 - Package Folder
+    #Object type 7 - Query Folder
+    #Object type 9 - Software Metering Folder
+    #Object type 14 - Operating System Installers Folder
+    #Object type 17 - State Migration GFolder
+    #Object type 18 - Image Package Folder
+    #Object type 19 - Boot Image Folder
+    #Object type 20 - Task Sequence Folder
+    #Object type 23 - Driver Package Folder
+    #Object type 25 - Driver Folder
+    #Object type 2011 - Configuration Baseline Folder
+    #Object type 5000 - Device Collection Folder
+    #Object type 5001 - User Collection Folder
+    #Object type 6000 - Application Folder
+    #Object type 6001 - Configuration Item Folder
+    $CollectionFolderArgs = @{
+        Name = $FolderName;
+        ObjectType = "6000";
+        ParentContainerNodeid = "0"
+    }
+    Set-WmiInstance -Class SMS_ObjectContainerNode -arguments $CollectionFolderArgs -namespace "root\SMS\Site_$SCCMSiteName" | Out-Null
+}
+
 #endregion Function
 
 #region Variables
 $Config = Get-Content "$PSScriptRoot\config.json" | ConvertFrom-Json 
-$global:Application = "Fiddler"
-$global:Application_detection = 'Fiddler'
-$global:DirAppinConsole = "Fiddler"
-$global:DistribPath = "$($Config.DistribPath)\Fiddler"
-$global:FileName = 'Fiddler-%version%.exe'
+$script:Application = "Fiddler"
+$script:Application_detection = 'Fiddler'
+$script:DirAppinConsole = "Fiddler"
+$script:DistribPath = "$($Config.DistribPath)Fiddler"
+$script:FileName = 'Fiddler-%version%.exe'
 $URLPage = 'https://www.telerik.com/support/whats-new/fiddler/release-history'
-$global:Version = '1.1'
+$script:Version = '1.1'
 $ProxyURL = $Config.ProxyURL
-$global:PSADTTemplatePath = $Config.PSADTTemplatePath
-$global:body = ''
-$global:NewVersion = $null
-$global:Publisher = 'Fiddler'
-$global:templatename = 'Config_Fiddler_template.ps1'
+$script:PSADTTemplatePath = "$((get-item $psscriptroot).parent.FullName)\Template\*" #"$($Config.PSADTTemplatePath)\*"
+$script:body = ''
+$script:NewVersion = $null
+$script:Publisher = 'Fiddler'
+$script:templatename = 'Config_Fiddler_template.ps1'
 $To= $Config.To
 #endregion Variables
 
 Try{
     Get-Fiddler -URLPage $URLPage
-    if ($global:NewVersion -eq $true)
+    if ($script:NewVersion -eq $true)
     {
         #New-Application
-        $global:ApplicationName = "$global:Application $global:version"
+        $script:ApplicationName = "$script:Application $script:version"
         $NewApplication_Properties = @{
-            ApplicationName = "$global:ApplicationName"
-            SourcesPath = "$global:DistribPath\$global:version"
+            ApplicationName = "$script:ApplicationName"
+            SourcesPath = "$script:DistribPath\$script:version"
             ProviderMachineName = $Config.ProviderMachineName
             SiteCode = $Config.SiteCode
-            Application = $global:Application
-            DirAppinConsole = $global:DirAppinConsole
-            Description = "$global:Application application version: $($global:version) `rCreated by Script"
-            Version = $global:Version
-            Publisher = $global:Publisher
+            Application = $script:Application
+            DirAppinConsole = $script:DirAppinConsole
+            Description = "$script:Application application version: $($script:version) `rCreated by Script"
+            Version = $script:Version
+            Publisher = $script:Publisher
             InstallCommand = "Deploy-Application.exe"
             DPGroup = 'Distribution Point Group'
             TestCollection = "DA | $Application | Pilot | Required"
             ProdCollection = "DA | $Application | Prod | Required"
             TestUserCollection = "ALL | TEST | Application Catalog | Standard user"
-            MSIFileName = '$global:FileName'
+            MSIFileName = '$script:FileName'
             UninstallCommand = """Deploy-Application.exe"" -DeploymentType Uninstall"
             LocalizedDescription = "Fiddler – прокси, который работает с трафиком между Вашим компьютером и удалённым сервером, и позволяет инспектировать и менять его."
-            IconLocationFile = "$DistribPath\icon.png"
+            IconLocationFile = "$((get-item $psscriptroot).parent.FullName)\Applications\$Application\icon.png"
             Scriptpath = "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
         }
         New-Application @NewApplication_Properties
-        Send-EmailAnonymously -Body $global:Body -To $To
+        Send-EmailAnonymously -Body $script:Body -To $To
     }
 }
 catch{}
