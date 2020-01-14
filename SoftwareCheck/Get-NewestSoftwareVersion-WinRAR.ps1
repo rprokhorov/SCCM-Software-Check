@@ -2,65 +2,60 @@
 
 #region Function
 function Get-WinRAR ($URLPage){
-    $result = Invoke-WebRequest -Uri $URLPage -UseBasicParsing -Proxy $ProxyURL -ProxyUseDefaultCredentials
+    $result = Invoke-WebRequest -Uri $URLPage -UseBasicParsing #-Proxy $ProxyURL -ProxyUseDefaultCredentials
     $result.RawContent -match 'WinRAR and RAR [0-9\.]+ release' | Out-Null
-    $global:Version = $Matches[0] -replace '[a-z ]+'
-    $shortnewversion = $global:Version -replace "\."
-    $global:FileName_x86 = $global:FileName_x86 -replace '%Version%', $shortnewversion
-    $global:FileName_x64 = $global:FileName_x64 -replace '%Version%', $shortnewversion
+    $script:Version = $Matches[0] -replace '[a-z ]+'
+    $shortnewversion = $script:Version -replace "\."
+    $script:FileName_x86 = $script:FileName_x86 -replace '%Version%', $shortnewversion
+    $script:FileName_x64 = $script:FileName_x64 -replace '%Version%', $shortnewversion
     $DownloadURL_x86 = "https://www.rarlab.com/rar/wrar$($shortnewversion)ru.exe"
     $DownloadURL_x64 = "https://www.rarlab.com/rar/winrar-x64-$($shortnewversion)ru.exe"
     
     Write-Host "-===========-" -ForegroundColor Green
-    Write-Host "Product:  $global:Application"
+    Write-Host "Product:  $script:Application"
     Write-Host "Search link: $URLPage"
     Write-Host "Version: "$version
     Write-host "Download Link: $DownLoadURL_x86"
     Write-Host "Download path: $DistribPath\$version\$FileName_x86"
     Write-host "Download Link: $DownLoadURL_x64"
     Write-Host "Download path: $DistribPath\$version\$FileName_x64"
-    $global:body  = "Product:  $global:Application `rSearch link: $URLPage `rVersion: $version`rLink: $DownloadURL_x86 `rDownload path: $DistribPath\$version\$FileName_x86 `rLink: $DownloadURL_x64 `rDownload path: $DistribPath\$version\$FileName_x64 `r"
+    $script:body  = "Product:  $script:Application `rSearch link: $URLPage `rVersion: $version`rLink: $DownloadURL_x86 `rDownload path: $DistribPath\$version\$FileName_x86 `rLink: $DownloadURL_x64 `rDownload path: $DistribPath\$version\$FileName_x64 `r"
     if (Test-Path "filesystem::$DistribPath\$version\")
     {
         write-host "Данная версия уже есть "
-        $global:NewVersion = $false
+        $script:NewVersion = $false
     }
     Else
     {
-        $global:NewVersion = $true
+        $script:NewVersion = $true
         Write-Host "Начинаю закачивание новой версии"
         Set-Location C:
         #cd C:
         New-Item -ItemType Directory -Path "$DistribPath\$version"  -Force
         # Копирую шаблон PSADT
         Copy-Item $PSADTTemplatePath -Destination "$DistribPath\$version" -Recurse
-        Copy-Item -Path "$DistribPath\$version\SupportFiles\Config files\$global:templatename" -Destination "$DistribPath\$version\SupportFiles\Config.ps1" -Force
+        Copy-Item -Path "$DistribPath\$version\SupportFiles\Config files\$script:templatename" -Destination "$DistribPath\$version\SupportFiles\Config.ps1" -Force
         (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appVersion%', "$version") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
         (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%FileName_x86%', "$FileName_x86") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
         (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%FileName_x64%', "$FileName_x64") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
-        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%Publisher%', "$global:Publisher") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
-        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appName%', "$global:Application") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
-        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appDetectionVersion%', "$global:Version") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
-        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appDetectionName%', "$global:Application_detection") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%Publisher%', "$script:Publisher") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appName%', "$script:Application") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appDetectionVersion%', "$script:Version") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appDetectionName%', "$script:Application_detection") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
         
-        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appVersion%', "$global:Version") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
-        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appDetectionVersion%', "$global:Version") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
-        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appName%', "$global:Application") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
-        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appDetectionName%', "$global:Application_detection") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appVersion%', "$script:Version") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appDetectionVersion%', "$script:Version") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appName%', "$script:Application") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appDetectionName%', "$script:Application_detection") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
         
         $destination_x86 = "$DistribPath\$version\Files\$FileName_x86"
         $destination_x64 = "$DistribPath\$version\Files\$FileName_x64"
-        Invoke-WebRequest -Uri $DownloadURL_x86 -OutFile $destination_x86 -UseBasicParsing -Proxy $ProxyURL -ProxyUseDefaultCredentials -UserAgent [Microsoft.PowerShell.Commands.PSUserAgent]::FireFox
-        Invoke-WebRequest -Uri $DownloadURL_x64 -OutFile $destination_x64 -UseBasicParsing -Proxy $ProxyURL -ProxyUseDefaultCredentials -UserAgent [Microsoft.PowerShell.Commands.PSUserAgent]::FireFox
+        Invoke-WebRequest -Uri $DownloadURL_x86 -OutFile $destination_x86 -UseBasicParsing -UserAgent [Microsoft.PowerShell.Commands.PSUserAgent]::FireFox #-Proxy $ProxyURL -ProxyUseDefaultCredentials 
+        Invoke-WebRequest -Uri $DownloadURL_x64 -OutFile $destination_x64 -UseBasicParsing -UserAgent [Microsoft.PowerShell.Commands.PSUserAgent]::FireFox #-Proxy $ProxyURL -ProxyUseDefaultCredentials 
         # copy winrar license
-        Copy-Item -Path "\\SCCMServer\Sources\Applications\WinRAR\License\rarreg_AK.key" -Destination "$DistribPath\$version\Files"
-        Copy-Item -Path "\\SCCMServer\Sources\Applications\WinRAR\License\rarreg_TNE.key" -Destination "$DistribPath\$version\Files"
-        Copy-Item -Path "\\SCCMServer\Sources\Applications\WinRAR\License\rarreg_TNF.key" -Destination "$DistribPath\$version\Files"
-
-        # Create install.cmd
-        #Add-Content -Path "$DistribPath\$version\Files\install.cmd" -Value '@ECHO OFF'
-        #Add-Content -Path "$DistribPath\$version\Files\install.cmd" -Value "$FileName /s"
-        #Add-Content -Path "$DistribPath\$version\Files\install.cmd" -Value "xcopy `"rarreg.key`" `"C:\Program Files\WinRAR`" /q /y"
+        #Copy-Item -Path "\\SCCMServer\Sources\Applications\WinRAR\License\rarreg_Domain1.key" -Destination "$DistribPath\$version\Files"
+        #Copy-Item -Path "\\SCCMServer\Sources\Applications\WinRAR\License\rarreg_Domain2.key" -Destination "$DistribPath\$version\Files"
+        #Copy-Item -Path "\\SCCMServer\Sources\Applications\WinRAR\License\rarreg_Domain3.key" -Destination "$DistribPath\$version\Files"
     }
     Write-Host "-===========-" -ForegroundColor Green
 }
@@ -102,7 +97,7 @@ function New-Application {
     #endregion
 
     #Create Application
-    New-CMApplication -Name $ApplicationName -LocalizedApplicationName $global:Application -Description $Description -SoftwareVersion $Version -Publisher $Publisher -LocalizedDescription $LocalizedDescription -IconLocationFile $IconLocationFile
+    New-CMApplication -Name $ApplicationName -LocalizedApplicationName $script:Application -Description $Description -SoftwareVersion $Version -Publisher $Publisher -LocalizedDescription $LocalizedDescription -IconLocationFile $IconLocationFile
     Set-CMApplication -Name $ApplicationName -UserCategory $UserCategory -AutoInstall $true
     $DeploymentTypeProperties = @{
     InstallCommand = $InstallCommand
@@ -122,6 +117,7 @@ function New-Application {
     # Move Application in Folder
     if ($DirAppinConsole -ne $null) {
         $Apps = Get-WmiObject -Namespace Root\SMS\Site_$SiteCode -Class SMS_ApplicationLatest -Filter "LocalizedDisplayName='$ApplicationName'"
+        Create-CollectionFolder -FolderName $DirAppinConsole -SCCMSiteName $SiteCode -ErrorAction SilentlyContinue
         $TargetFolderID = Get-WmiObject -Namespace Root\SMS\Site_$SiteCode -Class SMS_ObjectContainerNode -Filter "ObjectType='6000' and Name='$DirAppinConsole'"
         $CurrentFolderID = 0
         $ObjectTypeID = 6000
@@ -153,7 +149,7 @@ function New-Application {
     Set-Location $SaveLocation
 
     # Generate Mail Body
-    $global:Body += @"
+    $script:Body += @"
 Created application '$ApplicationName'.
 "@
 #Deployment assigned to '$TestCollection' starts on $DateTest.
@@ -171,7 +167,7 @@ function Send-EmailAnonymously {
         $SMTPServer = "SMTPServer.contoso.com",
         $From = "SCCMServer@contoso.com",
         [PARAMETER(Mandatory=$True)]$To,
-        $Subject = "Available new version $global:Application",
+        $Subject = "Available new version $script:Application",
         $Body
     )
     $PWord = ConvertTo-SecureString -String "anonymous" -AsPlainText -Force
@@ -179,57 +175,86 @@ function Send-EmailAnonymously {
     Send-MailMessage -From $From -To $To -Subject $Subject -Body $Body -SmtpServer $SMTPServer -Credential $Creds -Encoding Default -Priority High
 }
 
+Function Create-CollectionFolder
+{
+    param (
+        [PARAMETER(Mandatory=$True)]$FolderName,
+        [PARAMETER(Mandatory=$True)]$SCCMSiteName
+    )
+    #Object type 2 - Package Folder
+    #Object type 7 - Query Folder
+    #Object type 9 - Software Metering Folder
+    #Object type 14 - Operating System Installers Folder
+    #Object type 17 - State Migration GFolder
+    #Object type 18 - Image Package Folder
+    #Object type 19 - Boot Image Folder
+    #Object type 20 - Task Sequence Folder
+    #Object type 23 - Driver Package Folder
+    #Object type 25 - Driver Folder
+    #Object type 2011 - Configuration Baseline Folder
+    #Object type 5000 - Device Collection Folder
+    #Object type 5001 - User Collection Folder
+    #Object type 6000 - Application Folder
+    #Object type 6001 - Configuration Item Folder
+    $CollectionFolderArgs = @{
+        Name = $FolderName;
+        ObjectType = "6000";
+        ParentContainerNodeid = "0"
+    }
+    Set-WmiInstance -Class SMS_ObjectContainerNode -arguments $CollectionFolderArgs -namespace "root\SMS\Site_$SCCMSiteName" | Out-Null
+}
+
 #endregion Function
 
 #region Variables
 $Config = Get-Content "$PSScriptRoot\config.json" | ConvertFrom-Json 
-$global:Application = "WinRAR"
-$global:Application_detection = 'WinRAR'
-$global:DirAppinConsole = "WinRAR"
-$global:DistribPath = "$($Config.DistribPath)\WinRAR"
-$global:FileName_x86 = 'winrar-x86-%Version%-ru.exe'
-$global:FileName_x64 = 'winrar-x64-%Version%-ru.exe'
+$script:Application = "WinRAR"
+$script:Application_detection = 'WinRAR'
+$script:DirAppinConsole = "WinRAR"
+$script:DistribPath = "$($Config.DistribPath)WinRAR"
+$script:FileName_x86 = 'winrar-x86-%Version%-ru.exe'
+$script:FileName_x64 = 'winrar-x64-%Version%-ru.exe'
 $URLPage = "https://www.rarlab.com"
-$global:Version = '1.1'
+$script:Version = '1.1'
 $ProxyURL = $Config.ProxyURL
-$global:PSADTTemplatePath = $Config.PSADTTemplatePath
-$global:body = ''
-$global:NewVersion = $null
-$global:templatename = 'Config_WinRAR_template.ps1'
+$script:PSADTTemplatePath = "$((get-item $psscriptroot).parent.FullName)\Template\*" #"$($Config.PSADTTemplatePath)\*"
+$script:body = ''
+$script:NewVersion = $null
+$script:templatename = 'Config_WinRAR_template.ps1'
 $To= $Config.To
 #endregion Variables
 
 Try{
     Get-WinRAR -URLPage $URLPage
-    if ($global:NewVersion -eq $true)
+    if ($script:NewVersion -eq $true)
     {
         #New-Application
-        $global:ApplicationName = "$global:Application $global:version"
+        $script:ApplicationName = "$script:Application $script:version"
         $NewApplication_Properties = @{
-            ApplicationName = "$global:ApplicationName"
-            SourcesPath = "$global:DistribPath\$global:version"
+            ApplicationName = "$script:ApplicationName"
+            SourcesPath = "$script:DistribPath\$script:version"
             ProviderMachineName = $Config.ProviderMachineName
             SiteCode = $Config.SiteCode
-            Application = $global:Application
-            DirAppinConsole = $global:DirAppinConsole
-            Description = "$global:Application application version: $($global:version) `rCreated by Script"
-            Version = $global:Version
+            Application = $script:Application
+            DirAppinConsole = $script:DirAppinConsole
+            Description = "$script:Application application version: $($script:version) `rCreated by Script"
+            Version = $script:Version
             Publisher = 'WinRAR'
             InstallCommand = "Deploy-Application.exe"
             DPGroup = 'Distribution Point Group'
             TestCollection = "DA | $Application | Pilot | Required"
             ProdCollection = "DA | $Application | Prod | Required"
             TestUserCollection = "ALL | TEST | Application Catalog | Standard user"
-            MSIFileName = '$global:FileName'
+            MSIFileName = '$script:FileName'
             UninstallCommand = """Deploy-Application.exe"" -DeploymentType Uninstall"
             LocalizedDescription = @"
             WinRAR — архиватор файлов для 32- и 64-разрядных операционных систем Windows, позволяющий создавать/изменять/распаковывать архивы RAR и ZIP и распаковывать архивы множества других форматов
 "@
-            IconLocationFile = "$DistribPath\icon.png"
+            IconLocationFile = "$((get-item $psscriptroot).parent.FullName)\Applications\$Application\icon.png"
             Scriptpath = "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
         }
         New-Application @NewApplication_Properties
-        Send-EmailAnonymously -Body $global:Body -To $To
+        Send-EmailAnonymously -Body $script:Body -To $To
     }
 }
 catch{}
