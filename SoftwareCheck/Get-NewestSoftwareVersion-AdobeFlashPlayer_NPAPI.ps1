@@ -18,48 +18,48 @@ function Get-AdobeFlashPlayerNPAPI ($URLPage){
         $HTMLObject.write($src)
     }
     ($HTMLObject.getElementsByTagName('p') | Where-Object { $_.className -eq 'NoBottomMargin' -and $_.id -eq 'AUTO_ID_columnleft_p_version' }).innerText -match "[0-9\.]+" | out-Null
-    $global:Version = $Matches[0]
-    $majorVersion = ([version] $global:Version).Major
+    $script:Version = $Matches[0]
+    $majorVersion = ([version] $script:Version).Major
 
     # Создаем массив, и помещаем готовые ссылки на скачивание контента
     #$DownLoadURL = @()
-    #$DownLoadURL = "https://download.macromedia.com/pub/flashplayer/pdc/$global:Version/install_flash_player_${majorVersion}_active_x.msi"
-    $DownLoadURL += "https://download.macromedia.com/get/flashplayer/pdc/$global:Version/install_flash_player_${majorVersion}_plugin.msi"
-    #$DownLoadURL += "https://download.macromedia.com/pub/flashplayer/pdc/$global:Version/install_flash_player_${majorVersion}_ppapi.msi"
+    #$DownLoadURL = "https://download.macromedia.com/pub/flashplayer/pdc/$script:Version/install_flash_player_${majorVersion}_active_x.msi"
+    $DownLoadURL += "https://download.macromedia.com/get/flashplayer/pdc/$script:Version/install_flash_player_${majorVersion}_plugin.msi"
+    #$DownLoadURL += "https://download.macromedia.com/pub/flashplayer/pdc/$script:Version/install_flash_player_${majorVersion}_ppapi.msi"
     Write-Host "-===========-" -ForegroundColor Green
-    Write-Host "Product:  $global:Application"
+    Write-Host "Product:  $script:Application"
     Write-Host "Search link: $URLPage"
-    Write-Host "Version: "$global:Version
+    Write-Host "Version: "$script:Version
     Write-host "Download Link:    "$DownLoadURL
-    Write-Host "Download path: $DistribPath\$global:Version\install_flash_player_${majorVersion}_plugin.msi"#`n$DistribPath\$global:Version\install_flash_player_${majorVersion}_plugin.msi`n$DistribPath\$global:Version\install_flash_player_${majorVersion}_ppapi.msi`n"
-    $global:FileName = "install_flash_player_${majorVersion}_plugin.msi"
-    $global:body  = "Product:  $global:Application `rSearch link: $URLPage `rVersion: $global:Version`rLink: $DownLoadURL `rDownload path: $DistribPath\$global:Version\$FileName `r"
-    if (Test-Path "filesystem::$DistribPath\$global:Version\")
+    Write-Host "Download path: $DistribPath\$script:Version\install_flash_player_${majorVersion}_plugin.msi"#`n$DistribPath\$script:Version\install_flash_player_${majorVersion}_plugin.msi`n$DistribPath\$script:Version\install_flash_player_${majorVersion}_ppapi.msi`n"
+    $script:FileName = "install_flash_player_${majorVersion}_plugin.msi"
+    $script:body  = "Product:  $script:Application `rSearch link: $URLPage `rVersion: $script:Version`rLink: $DownLoadURL `rDownload path: $DistribPath\$script:Version\$FileName `r"
+    if (Test-Path "filesystem::$DistribPath\$script:Version\")
     {
-        write-host "Версия уже есть $DistribPath\$global:Version\"
-        $global:NewVersion = $false
+        write-host "Версия уже есть $DistribPath\$script:Version\"
+        $script:NewVersion = $false
     }
     Else
     {
-        $global:NewVersion = $true
+        $script:NewVersion = $true
     Write-Host "Начинаю закачивание новой версии"
     Set-Location C:
     #cd C:
     New-Item -ItemType Directory -Path "$DistribPath\$version"  -Force
     # Копирую шаблон PSADT
     Copy-Item $PSADTTemplatePath -Destination "$DistribPath\$version" -Recurse
-    Copy-Item -Path "$DistribPath\$version\SupportFiles\Config files\$global:templatename" -Destination "$DistribPath\$version\SupportFiles\Config.ps1" -Force
+    Copy-Item -Path "$DistribPath\$version\SupportFiles\Config files\$script:templatename" -Destination "$DistribPath\$version\SupportFiles\Config.ps1" -Force
     (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appVersion%', "$version") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
     (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%FileName%', "$FileName") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
-    (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%Publisher%', "$global:Publisher") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
-    (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appName%', "$global:Application") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
-    (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appDetectionVersion%', "$global:Version") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
-    (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appDetectionName%', "$global:Application_detection") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
+    (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%Publisher%', "$script:Publisher") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
+    (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appName%', "$script:Application") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
+    (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appDetectionVersion%', "$script:Version") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
+    (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appDetectionName%', "$script:Application_detection") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
     
-    (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appVersion%', "$global:Version") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
-    (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appDetectionVersion%', "$global:Version") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
-    (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appName%', "$global:Application") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
-    (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appDetectionName%', "$global:Application_detection") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
+    (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appVersion%', "$script:Version") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
+    (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appDetectionVersion%', "$script:Version") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
+    (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appName%', "$script:Application") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
+    (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appDetectionName%', "$script:Application_detection") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
     
     $destination = "$DistribPath\$version\Files\$FileName"
     Invoke-WebRequest -Uri $DownLoadURL -OutFile $destination -UseBasicParsing -UserAgent [Microsoft.PowerShell.Commands.PSUserAgent]::FireFox #-Proxy $ProxyURL -ProxyUseDefaultCredentials 
@@ -103,7 +103,7 @@ function New-Application {
     #endregion
 
     #Create Application
-    New-CMApplication -Name $ApplicationName -LocalizedApplicationName $global:Application -Description $Description -SoftwareVersion $Version -Publisher $Publisher -LocalizedDescription $LocalizedDescription -IconLocationFile $IconLocationFile
+    New-CMApplication -Name $ApplicationName -LocalizedApplicationName $script:Application -Description $Description -SoftwareVersion $Version -Publisher $Publisher -LocalizedDescription $LocalizedDescription -IconLocationFile $IconLocationFile
 
     $DeploymentTypeProperties = @{
     InstallCommand = $InstallCommand
@@ -152,7 +152,7 @@ function New-Application {
     Set-Location $SaveLocation
 
     # Generate Mail Body
-    $global:Body += @"
+    $script:Body += @"
 Created application '$ApplicationName'.
 "@
 #Deployment assigned to '$TestCollection' starts on $DateTest.
@@ -170,7 +170,7 @@ function Send-EmailAnonymously {
         $SMTPServer = "SMTPServer.contoso.com",
         $From = "SCCMServer@contoso.com",
         [PARAMETER(Mandatory=$True)]$To,
-        $Subject = "Available new version $global:Application",
+        $Subject = "Available new version $script:Application",
         $Body
     )
     $PWord = ConvertTo-SecureString -String "anonymous" -AsPlainText -Force
@@ -211,43 +211,43 @@ Function Create-CollectionFolder
 
 #region Variables
 $Config = Get-Content "$PSScriptRoot\config.json" | ConvertFrom-Json 
-$global:Application = "Adobe Flash Player NPAPI"
-$global:Application_detection = "Adobe Flash Player*NPAPI"
-$global:DirAppinConsole = "Adobe Flash Player"
-$global:DistribPath = "$($Config.DistribPath)Adobe\Flash Player NPAPI"
-$global:FileName = 'Adobe Flash Player.exe'
+$script:Application = "Adobe Flash Player NPAPI"
+$script:Application_detection = "Adobe Flash Player*NPAPI"
+$script:DirAppinConsole = "Adobe Flash Player"
+$script:DistribPath = "$($Config.DistribPath)Adobe\Flash Player NPAPI"
+$script:FileName = 'Adobe Flash Player.exe'
 $URLPage = "https://get.adobe.com/en/flashplayer/"
-$global:Version = '1.1'
+$script:Version = '1.1'
 $ProxyURL = $Config.ProxyURL
-$global:PSADTTemplatePath = "$((get-item $psscriptroot).parent.FullName)\Template\*" #"$($Config.PSADTTemplatePath)\*"
-$global:body = ''
-$global:NewVersion = $null
-$global:templatename = 'Config_AdobeFlashPlayerNPAPI_template.ps1'
+$script:PSADTTemplatePath = "$((get-item $psscriptroot).parent.FullName)\Template\*" #"$($Config.PSADTTemplatePath)\*"
+$script:body = ''
+$script:NewVersion = $null
+$script:templatename = 'Config_AdobeFlashPlayerNPAPI_template.ps1'
 $To= $Config.To
 #endregion Variables
 
 Try{
     Get-AdobeFlashPlayerNPAPI -URLPage $URLPage
-    if ($global:NewVersion -eq $true)
+    if ($script:NewVersion -eq $true)
     {
         #New-Application
-        $global:ApplicationName = "$global:Application $global:version"
+        $script:ApplicationName = "$script:Application $script:version"
         $NewApplication_Properties = @{
-            ApplicationName = "$global:ApplicationName"
-            SourcesPath = "$global:DistribPath\$global:version"
+            ApplicationName = "$script:ApplicationName"
+            SourcesPath = "$script:DistribPath\$script:version"
             ProviderMachineName = $Config.ProviderMachineName
             SiteCode = $Config.SiteCode
-            Application = $global:Application
-            DirAppinConsole = $global:DirAppinConsole
-            Description = "$global:Application application version: $($global:version) `rCreated by Script"
-            Version = $global:Version
+            Application = $script:Application
+            DirAppinConsole = $script:DirAppinConsole
+            Description = "$script:Application application version: $($script:version) `rCreated by Script"
+            Version = $script:Version
             Publisher = 'Adobe'
             InstallCommand = "Deploy-Application.exe"
             DPGroup = 'Distribution Point Group'
             TestCollection = "DA | $Application | Pilot | Required"
             ProdCollection = "DA | $Application | Prod | Required"
             TestUserCollection = "ALL | TEST | Application Catalog | Standard user"
-            MSIFileName = '$global:FileName'
+            MSIFileName = '$script:FileName'
             UninstallCommand = """Deploy-Application.exe"" -DeploymentType Uninstall"
             LocalizedDescription = @"
             Adobe Flash Player - это компьютерное программное обеспечение для использования контента, созданного на платформе Adobe Flash, включая просмотр мультимедийного контента, выполнение многофункциональных интернет-приложений и потоковую передачу аудио и видео.
@@ -259,7 +259,7 @@ Try{
             Scriptpath = "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
         }
         New-Application @NewApplication_Properties
-        Send-EmailAnonymously -Body $global:Body -To $To
+        Send-EmailAnonymously -Body $script:Body -To $To
     }
 }
 catch{}
