@@ -3,13 +3,20 @@
 #region Function
 # Получение последней версии Adobe Flash Player NPAPI
 function Get-AdobeFlashPlayerNPAPI ($URLPage){
-    $result = Invoke-WebRequest $URLPage -UseBasicParsing -Proxy $ProxyURL -ProxyUseDefaultCredentials
+    $result = Invoke-WebRequest $URLPage -UseBasicParsing #-Proxy $ProxyURL -ProxyUseDefaultCredentials
     $Content = $result.RawContent
     # Create HTML file Object
     $HTMLObject = New-Object -Com "HTMLFile"
     # Write HTML content according to DOM Level2 
-    $HTMLObject.IHTMLDocument2_write($Content)
-
+    try {
+        # This works in PowerShell with Office installed
+        $HTMLObject.IHTMLDocument2_write($content)
+    }
+    catch {
+        # This works when Office is not installed    
+        $src = [System.Text.Encoding]::Unicode.GetBytes($content)
+        $HTMLObject.write($src)
+    }
     ($HTMLObject.getElementsByTagName('p') | Where-Object { $_.className -eq 'NoBottomMargin' -and $_.id -eq 'AUTO_ID_columnleft_p_version' }).innerText -match "[0-9\.]+" | out-Null
     $global:Version = $Matches[0]
     $majorVersion = ([version] $global:Version).Major
@@ -55,7 +62,7 @@ function Get-AdobeFlashPlayerNPAPI ($URLPage){
     (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appDetectionName%', "$global:Application_detection") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
     
     $destination = "$DistribPath\$version\Files\$FileName"
-    Invoke-WebRequest -Uri $DownLoadURL -OutFile $destination -UseBasicParsing -Proxy $ProxyURL -ProxyUseDefaultCredentials -UserAgent [Microsoft.PowerShell.Commands.PSUserAgent]::FireFox
+    Invoke-WebRequest -Uri $DownLoadURL -OutFile $destination -UseBasicParsing -UserAgent [Microsoft.PowerShell.Commands.PSUserAgent]::FireFox #-Proxy $ProxyURL -ProxyUseDefaultCredentials 
     }
     Write-Host "-===========-" -ForegroundColor Green
 }
@@ -113,6 +120,7 @@ function New-Application {
     # Move Application in Folder
     if ($DirAppinConsole -ne $null) {
         $Apps = Get-WmiObject -Namespace Root\SMS\Site_$SiteCode -Class SMS_ApplicationLatest -Filter "LocalizedDisplayName='$ApplicationName'"
+        Create-CollectionFolder -FolderName $DirAppinConsole -SCCMSiteName $SiteCode -ErrorAction SilentlyContinue
         $TargetFolderID = Get-WmiObject -Namespace Root\SMS\Site_$SiteCode -Class SMS_ObjectContainerNode -Filter "ObjectType='6000' and Name='$DirAppinConsole'"
         $CurrentFolderID = 0
         $ObjectTypeID = 6000
@@ -170,6 +178,35 @@ function Send-EmailAnonymously {
     Send-MailMessage -From $From -To $To -Subject $Subject -Body $Body -SmtpServer $SMTPServer -Credential $Creds -Encoding Default -Priority High
 }
 
+Function Create-CollectionFolder
+{
+    param (
+        [PARAMETER(Mandatory=$True)]$FolderName,
+        [PARAMETER(Mandatory=$True)]$SCCMSiteName
+    )
+    #Object type 2 - Package Folder
+    #Object type 7 - Query Folder
+    #Object type 9 - Software Metering Folder
+    #Object type 14 - Operating System Installers Folder
+    #Object type 17 - State Migration GFolder
+    #Object type 18 - Image Package Folder
+    #Object type 19 - Boot Image Folder
+    #Object type 20 - Task Sequence Folder
+    #Object type 23 - Driver Package Folder
+    #Object type 25 - Driver Folder
+    #Object type 2011 - Configuration Baseline Folder
+    #Object type 5000 - Device Collection Folder
+    #Object type 5001 - User Collection Folder
+    #Object type 6000 - Application Folder
+    #Object type 6001 - Configuration Item Folder
+    $CollectionFolderArgs = @{
+        Name = $FolderName;
+        ObjectType = "6000";
+        ParentContainerNodeid = "0"
+    }
+    Set-WmiInstance -Class SMS_ObjectContainerNode -arguments $CollectionFolderArgs -namespace "root\SMS\Site_$SCCMSiteName" | Out-Null
+}
+
 #endregion Function
 
 #region Variables
@@ -182,7 +219,7 @@ $global:FileName = 'Adobe Flash Player.exe'
 $URLPage = "https://get.adobe.com/en/flashplayer/"
 $global:Version = '1.1'
 $ProxyURL = $Config.ProxyURL
-$global:PSADTTemplatePath = $Config.PSADTTemplatePath
+$global:PSADTTemplatePath = "$((get-item $psscriptroot).parent.FullName)\Template\*" #"$($Config.PSADTTemplatePath)\*"
 $global:body = ''
 $global:NewVersion = $null
 $global:templatename = 'Config_AdobeFlashPlayerNPAPI_template.ps1'
@@ -218,7 +255,7 @@ Try{
             PPAPI - Chrome
             ActiveX - Internet Explorer
 "@
-            IconLocationFile = "$DistribPath\icon.png"
+            IconLocationFile = "$((get-item $psscriptroot).parent.FullName)\Applications\$Application\icon.png"
             Scriptpath = "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
         }
         New-Application @NewApplication_Properties
