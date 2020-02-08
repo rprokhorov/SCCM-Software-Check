@@ -4,14 +4,14 @@
 # Получение последней версии Adobe Acrobat Reader DC
 function Get-AdobeReaderDC ($URLPage){
     # Присваивание переменных
-    $res = Invoke-WebRequest -Uri $URLPage -UseBasicParsing -Proxy $ProxyURL -ProxyUseDefaultCredentials
+    $res = Invoke-WebRequest -Uri $URLPage -UseBasicParsing #-Proxy $ProxyURL -ProxyUseDefaultCredentials
     # We can find a lot of URLs. They will have alfabit order (Linux, Ma)
     $URL = "https://supportdownloads.adobe.com/support/downloads/$(($res.Links | Where-Object {$_.OuterHTML -like '*Adobe Acrobat Reader DC (Continuous Track) update - All languages*'})[0].href)"
-    $Result = Invoke-WebRequest -Uri $URL -UseBasicParsing -Proxy $ProxyURL -ProxyUseDefaultCredentials
+    $Result = Invoke-WebRequest -Uri $URL -UseBasicParsing #-Proxy $ProxyURL -ProxyUseDefaultCredentials
     $Result.RawContent -match 'Adobe Reader [0-9\.]+ for Windows' | Out-Null
     $global:Version = $Matches[0] -replace 'Adobe Reader 20', '' -replace ' for Windows', ''
     $URLDownload = "https://supportdownloads.adobe.com/support/downloads/$(($Result.Links | Where-Object {$_.OuterHTML -like '*Proceed to Download*'}).href)" -replace '&amp;', '&'
-    $Result = Invoke-WebRequest -Uri $URLDownload -UseBasicParsing -Proxy $ProxyURL -ProxyUseDefaultCredentials
+    $Result = Invoke-WebRequest -Uri $URLDownload -UseBasicParsing #-Proxy $ProxyURL -ProxyUseDefaultCredentials
     $DownLoadURL = ($Result.Links | Where-Object {$_.OuterHTML -like '*Download Now*'}).href
     $global:FileName = ($DownLoadURL -split '/')[-1]
     Write-Host "-===========-" -ForegroundColor Green
@@ -52,7 +52,7 @@ function Get-AdobeReaderDC ($URLPage){
         (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appDetectionName%', "$global:Application_detection") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
         
         $destination = "$DistribPath\$version\Files\$FileName"
-        Invoke-WebRequest -Uri $DownLoadURL -OutFile $destination -UseBasicParsing -Proxy $ProxyURL -ProxyUseDefaultCredentials -UserAgent [Microsoft.PowerShell.Commands.PSUserAgent]::FireFox
+        Invoke-WebRequest -Uri $DownLoadURL -OutFile $destination -UseBasicParsing -UserAgent [Microsoft.PowerShell.Commands.PSUserAgent]::FireFox #-Proxy $ProxyURL -ProxyUseDefaultCredentials 
     }
     Write-Host "-===========-" -ForegroundColor Green
 }
@@ -114,6 +114,7 @@ function New-Application {
     # Move Application in Folder
     if ($DirAppinConsole -ne $null) {
         $Apps = Get-WmiObject -Namespace Root\SMS\Site_$SiteCode -Class SMS_ApplicationLatest -Filter "LocalizedDisplayName='$ApplicationName'"
+        Create-CollectionFolder -FolderName $DirAppinConsole -SCCMSiteName $SiteCode -ErrorAction SilentlyContinue
         $TargetFolderID = Get-WmiObject -Namespace Root\SMS\Site_$SiteCode -Class SMS_ObjectContainerNode -Filter "ObjectType='6000' and Name='$DirAppinConsole'"
         $CurrentFolderID = 0
         $ObjectTypeID = 6000
@@ -171,6 +172,35 @@ function Send-EmailAnonymously {
     Send-MailMessage -From $From -To $To -Subject $Subject -Body $Body -SmtpServer $SMTPServer -Credential $Creds -Encoding Default -Priority High
 }
 
+Function Create-CollectionFolder
+{
+    param (
+        [PARAMETER(Mandatory=$True)]$FolderName,
+        [PARAMETER(Mandatory=$True)]$SCCMSiteName
+    )
+    #Object type 2 - Package Folder
+    #Object type 7 - Query Folder
+    #Object type 9 - Software Metering Folder
+    #Object type 14 - Operating System Installers Folder
+    #Object type 17 - State Migration GFolder
+    #Object type 18 - Image Package Folder
+    #Object type 19 - Boot Image Folder
+    #Object type 20 - Task Sequence Folder
+    #Object type 23 - Driver Package Folder
+    #Object type 25 - Driver Folder
+    #Object type 2011 - Configuration Baseline Folder
+    #Object type 5000 - Device Collection Folder
+    #Object type 5001 - User Collection Folder
+    #Object type 6000 - Application Folder
+    #Object type 6001 - Configuration Item Folder
+    $CollectionFolderArgs = @{
+        Name = $FolderName;
+        ObjectType = "6000";
+        ParentContainerNodeid = "0"
+    }
+    Set-WmiInstance -Class SMS_ObjectContainerNode -arguments $CollectionFolderArgs -namespace "root\SMS\Site_$SCCMSiteName" | Out-Null
+}
+
 #endregion Function
 
 
@@ -179,19 +209,19 @@ $Config = Get-Content "$PSScriptRoot\config.json" | ConvertFrom-Json
 $global:Application = "Adobe Acrobat Reader DC"
 $global:Application_detection = "Adobe Acrobat Reader DC"
 $global:DirAppinConsole = "Adobe Acrobat Reader DC"
-$global:DistribPath = "$($Config.DistribPath)\Adobe\Acrobat Reader DC - Russian"
+$global:DistribPath = "$($Config.DistribPath)Adobe\Acrobat Reader DC - Russian"
 $global:FileName = 'example.msp'
 #$URLPage = 'https://supportdownloads.adobe.com/support/downloads/new.jsp' For all Platforms
 $URLPage = 'https://supportdownloads.adobe.com/support/downloads/product.jsp?product=10&platform=Windows' # For Windows only
 $global:Version = '1.1'
-$global:PSADTTemplatePath = $Config.PSADTTemplatePath
+$global:PSADTTemplatePath = "$((get-item $psscriptroot).parent.FullName)\Template\*" #"$($Config.PSADTTemplatePath)\*"
 $ProxyURL = $Config.ProxyURL
 $global:body = ''
 $global:NewVersion = $null
 $global:templatename = 'Config_AdobeAcrobatReaderDC_template.ps1'
 $To= $Config.To
 #endregion Variables
-try{
+#try{
     Get-AdobeReaderDC -URLPage $URLPage
     if ($global:NewVersion -eq $true)
     {
@@ -213,14 +243,15 @@ try{
             ProdCollection = "DA | Adobe Acrobat Reader DC - Russian | Prod | Required"
             TestUserCollection = "ALL | TEST | Application Catalog | Standard user"
             MSIFileName = '$global:FileName'
-            UninstallCommand = """Deploy-Application.exe"" -DeploymentType Uninstall"  #"msiexec /x {AC76BA86-7AD7-1049-7B44-AC0F074E4100} /q"
+            UserCategory = 'Without approval'
+            UninstallCommand = """Deploy-Application.exe"" -DeploymentType Uninstall"
             LocalizedDescription = 'ПО Adobe Acrobat Reader DC — это бесплатный мировой стандарт, который используется для просмотра, печати и комментирования документов в формате PDF. Это единственное средство просмотра PDF-файлов, которое может открывать и взаимодействовать со всеми видами содержимого в PDF-формате, включая формы и мультимедийный контент.'
-            IconLocationFile = "\\SCCMServer\Sources\Applications\Adobe\Acrobat Reader DC - Russian\icon.png"
+            IconLocationFile = "$((get-item $psscriptroot).parent.FullName)\Applications\$Application\icon.png"
             Scriptpath = "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
         }
-    
+        "icon: $((get-item $psscriptroot).parent.FullName)\Applications\$Application\icon.png"
         New-Application @NewApplication_Properties
         Send-EmailAnonymously -Body $global:Body -To $To
     }
-}
-Catch{}
+#}
+#Catch{}
