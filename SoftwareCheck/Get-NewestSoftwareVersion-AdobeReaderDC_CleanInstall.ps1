@@ -221,7 +221,8 @@ $global:NewVersion = $null
 $global:templatename = 'Config_AdobeAcrobatReaderDC_template.ps1'
 $To= $Config.To
 #endregion Variables
-#try{
+
+try{
     Get-AdobeReaderDC -URLPage $URLPage
     if ($global:NewVersion -eq $true)
     {
@@ -253,5 +254,5 @@ $To= $Config.To
         New-Application @NewApplication_Properties
         Send-EmailAnonymously -Body $global:Body -To $To
     }
-#}
-#Catch{}
+}
+Catch{}

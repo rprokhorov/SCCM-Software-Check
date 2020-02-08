@@ -230,7 +230,7 @@ $To= $Config.To
 #endregion Variables
 
 write-host "Get-AdobeFlashPlayerActiveX"
-#Try{
+Try{
     Get-AdobeFlashPlayerActiveX -URLPage $URLPage
     if ($script:NewVersion -eq $true)
     {
@@ -265,5 +265,5 @@ write-host "Get-AdobeFlashPlayerActiveX"
         New-Application @NewApplication_Properties
         Send-EmailAnonymously -Body $script:Body -To $To
     }
-#}
-#catch{}
+}
+catch{}

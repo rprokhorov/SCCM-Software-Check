@@ -199,7 +199,7 @@ Function Create-CollectionFolder
 #endregion Function
 
 #region Variables
-$Config = Get-Content "$PSScriptRoot\config.json" | ConvertFrom-Json 
+$Config = Get-Content "$PSScriptRoot\config.json" | ConvertFrom-Json
 $script:Application = "XMind"
 $script:Application_detection = 'XMind'
 $script:DirAppinConsole = "XMind"
