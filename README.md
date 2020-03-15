@@ -21,6 +21,8 @@ __Структура хранения дистрибутивов__
 ____________
 __Структура приложений в SCCM__
 
+![alt text](https://github.com/rprokhorov/LikePatchMyPC/blob/master/Documentation/SCCMApplicationsStructure.png?raw=true "SCCM Application structure")
+
 - _Красный_ - название приложения. Я предпочитаю делать максимально плоский список, так как в этом случае любой новый сотрудник не должен обладать какими-то тайными знаниями, а просто должен просмотреть список и найти нужное.
 - _Синий_ - папка с архивными версиями приложений. Я предпочитаю не удалять старые приложения, а просто перемещать их в отдельную папку. Там же могут храниться приложения которые относятся к этому продукту и достались  по наследству и по какой-то причне уже не используются. В этом случае, я тоже лучше сохраню приложение.
 - _Зелёный_ - приложения, которые используются в данный момент в продакшене. В определённый момент, тут будут находиться 2 версии приложений v1 и v2, пока не произошёл переход с одной версии на другую.
@@ -28,6 +30,8 @@ __Структура приложений в SCCM__
 ________
 
 __Описание шаблона__
+
+![alt text](https://github.com/rprokhorov/LikePatchMyPC/blob/master/Documentation/TemplateStructure.png?raw=true "Template structure")
 
 Общую информацию о работе с PSADT лучше всего почтать у автора.
 Я вносил следующие изсенения:
@@ -38,4 +42,57 @@ __Описание шаблона__
 - _Белый_ -  оригинальные файлы из PSADT
 - _Жёлтый_ - части шаблона, которые я изменял. Более подобно опишу позже.
 
+_______
+__Описание файла Config.ps1__
+Пример файла Config.ps1:
 
+```Powershell
+$Config = @{
+    appVendor = "Mozilla"
+    appName = "Mozilla Firefox ESR"
+    appVersion = "68.3.0"
+    appDetectionVersion = "68.3.0"
+    appDetectionName = "Mozilla Firefox*ESR"
+    appScriptDate = get-date -Format "yyyy/MM/dd"
+    appScriptAuthor = "RProhkorov"
+    close_app = "firefox"
+    InstallScriptBlock = {
+        [string]$installPhase = 'Installation'
+        Show-InstallationProgress -StatusMessage "Установка приложения $appName `nШаг [1/2] установка новой версии ПО..."
+        # Установка любого приложения с параметрами
+        if ($Is64Bit)
+        {
+            $mainExitCode = Execute-Process -Path "$dirFiles\FirefoxESR_x64.exe" -Parameters "/s /INI=$dirFiles\Firefox.ini"
+        }
+        else
+        {
+            $mainExitCode = Execute-Process -Path "$dirFiles\FirefoxESR_x86.exe" -Parameters "/s /INI=$dirFiles\Firefox.ini"
+        }
+        Show-InstallationProgress -StatusMessage "Установка приложения $appName `nШаг [2/2] копирование файла политик..."
+		[string]$installPhase = 'Post-Installation'
+        $FireFox_Folder = 'C:\Program Files\Mozilla Firefox'
+        if(!(Test-Path -Path "$FireFox_Folder\distribution"))
+        {
+            New-Folder -Path "$FireFox_Folder\distribution"
+        }
+        Copy-File -Path "$dirSupportFiles\policies.json" -Destination "$FireFox_Folder\distribution\policies.json" -ContinueOnError $false 
+    }
+    UninstallScriptBlock = {
+        [string]$installPhase = 'Uninstall'
+        Stop-Process -Name 'Firefox' -Force
+		$mainExitCode = Execute-Process -Path "C:\Program Files\Mozilla Firefox\uninstall\helper.exe" -Parameters "/s"
+    }
+}
+
+```
+
+- _appVendor_ - автор приложения (Mozilla)
+- _appName_ - название приложения в SCCM, и в окне установки, если будет показываться процесс установки.
+- _appVersion_ - версия приложения, которая "читаема" для человека. Смотрите пример выше с SQL Management Studio.
+- _appDetectionVersion_ - версия приложения, которая которая будет использоваться при поиске в DetectionMethod.ps1
+- _appDetectionName_ - имя прилжения, которое будет использваться для поиска его на компьютере. Например, appName = "Adobe Flash Player ActiveX", при этом на компьютере приложение будет искаться по маске appDetectionName = "Adobe Flash Player*ActiveX"
+- _appScriptDate_ - переменная для понимания когда был создан этот конфиг файл. Нигде не используется.
+- _appScriptAuthor_ - автор конфига.
+- _close_app_ - приложения, которые должны быть закрыты до начала установки приложения. Если приложение будет запущёно на компьютере и будет мешать запуску установки, то пользователю будет показано окно с просьбой закрыть прилжение или отложить установку.
+- _InstallScriptBlock_ - блок, в котором описывается как будет проходить установка приложения. В блоке можно и нужно использовать функции PSADT.
+- _UninstallScriptBlock_ - блок, который будет выполняться при запуске удаления приложения
