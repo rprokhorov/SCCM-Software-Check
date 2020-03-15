@@ -50,7 +50,7 @@ function write-log{
 		"<![LOG[$Message]LOG]!><time=`"$LogTime"+"180`" date=`"$LogDate`" component=`"$Component`" context="""" type=""$($MessageType_to_int[$MessageType])"" thread=""0"" file=""$Source"">" | out-file $LogFileDirectory\$LogFileName -Append -Encoding utf8 -ErrorAction SilentlyContinue        
     }
     catch{
-		Write-Host "Error write-log $($_.Exception.Message)"
+		
 	}
 }
 
