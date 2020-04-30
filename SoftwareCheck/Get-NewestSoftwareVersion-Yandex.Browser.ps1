@@ -70,7 +70,9 @@ function New-Application {
         [PARAMETER(Mandatory=$True)]$UninstallCommand,
         [PARAMETER(Mandatory=$False)]$LocalizedDescription,
         [PARAMETER(Mandatory=$False)]$IconLocationFile,
-        [PARAMETER(Mandatory=$True)]$Scriptpath
+        [PARAMETER(Mandatory=$True)]$Scriptpath,
+        [PARAMETER(Mandatory=$True)]$LocalScriptpath,
+        [PARAMETER(Mandatory=$False)]$UserCategory
     )
     
     # $Version = $newversion
@@ -117,7 +119,8 @@ function New-Application {
     InstallationProgramVisibility = 'Normal'
     UninstallCommand = $UninstallCommand
     ScriptLanguage = 'PowerShell' 
-    ScriptFile = $scriptPath}
+    #ScriptFile = $scriptPath}
+    ScriptText = (Get-Content -Path $LocalScriptpath) -join "`n"}
     #$DeploymentTypeProperties
     Add-CMScriptDeploymentType @DeploymentTypeProperties -RequireUserInteraction
 
@@ -200,6 +203,9 @@ $global:NewVersion = $null
 $global:Publisher = 'ООО «ЯНДЕКС»'
 $global:templatename = 'Config_YandexBrowser_template.ps1'
 $To= $Config.To
+$From = $config.From
+$MailServer = $Config.MailServer
+$LocalDistribPath = $Config.LocalDistribPath
 #endregion Variables
     Get-YandexBrowser -URLPage $URLPage
     if ($global:NewVersion -eq $true)
@@ -226,8 +232,9 @@ $To= $Config.To
             LocalizedDescription = 'Яндекс.Браузер — корпоративный браузер, созданный компанией «Яндекс».'
             IconLocationFile = "$global:DistribPath\icon.png"
             Scriptpath = "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
+            LocalScriptpath = "$LocalDistribPath\$version\SupportFiles\DetectionMethod.ps1"
         }
     
         New-Application @NewApplication_Properties
-        Send-EmailAnonymously -Body $global:Body -To $To
+        Send-EmailAnonymously -Body $global:Body -To $To -SMTPServer $MailServer -From $From
     }

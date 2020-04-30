@@ -77,6 +77,7 @@ function New-Application {
         [PARAMETER(Mandatory=$False)]$LocalizedDescription,
         [PARAMETER(Mandatory=$False)]$IconLocationFile,
         [PARAMETER(Mandatory=$True)]$Scriptpath,
+        [PARAMETER(Mandatory=$True)]$LocalScriptpath,
         [PARAMETER(Mandatory=$False)]$UserCategory
     )
     
@@ -104,9 +105,10 @@ function New-Application {
     InstallationProgramVisibility = 'Normal'
     UninstallCommand = $UninstallCommand
     ScriptLanguage = 'PowerShell'
-    RebootBehavior = 'NoAction'
+    #RebootBehavior = 'NoAction'
     RequireUserInteraction = $true
-    ScriptFile = $scriptPath}
+    #ScriptFile = $scriptPath}
+    ScriptText = (Get-Content -Path $LocalScriptpath) -join "`n"}
     Add-CMScriptDeploymentType @DeploymentTypeProperties
     
     
@@ -220,6 +222,9 @@ $script:NewVersion = $null
 $script:Publisher = 'The Git Development Community'
 $script:templatename = 'Config_git_template.ps1'
 $To= $Config.To
+$From = $config.From
+$MailServer = $Config.MailServer
+$LocalDistribPath = $Config.LocalDistribPath
 #endregion Variables
 
 Try{
@@ -250,9 +255,10 @@ Try{
             Программа является свободной и выпущена под лицензией GNU GPL версии 2. По умолчанию используется TCP порт 9418'
             IconLocationFile = "$((get-item $psscriptroot).parent.FullName)\Applications\$Application\icon.png"
             Scriptpath = "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
+            LocalScriptpath = "$LocalDistribPath\$version\SupportFiles\DetectionMethod.ps1"
         }
         New-Application @NewApplication_Properties
-        Send-EmailAnonymously -Body $script:Body -To $To
+        Send-EmailAnonymously -Body $global:Body -To $To -SMTPServer $MailServer -From $From
     }
 }
 catch{}

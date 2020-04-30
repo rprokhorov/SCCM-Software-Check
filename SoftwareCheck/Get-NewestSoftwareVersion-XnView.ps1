@@ -68,7 +68,9 @@ function New-Application {
         [PARAMETER(Mandatory=$True)]$UninstallCommand,
         [PARAMETER(Mandatory=$False)]$LocalizedDescription,
         [PARAMETER(Mandatory=$False)]$IconLocationFile,
-        [PARAMETER(Mandatory=$True)]$Scriptpath
+        [PARAMETER(Mandatory=$True)]$Scriptpath,
+        [PARAMETER(Mandatory=$True)]$LocalScriptpath,
+        [PARAMETER(Mandatory=$False)]$UserCategory
     )
     Write-Host "Get-Module ConfigurationManage"  -ForegroundColor DarkGreen
     #region Import the ConfigurationManager module and change PSDrive
@@ -98,7 +100,8 @@ function New-Application {
         InstallationProgramVisibility = 'Normal'
         UninstallCommand = $UninstallCommand
         ScriptLanguage = 'PowerShell' 
-        ScriptFile = $scriptPath}
+        #ScriptFile = $scriptPath}
+    ScriptText = (Get-Content -Path $LocalScriptpath) -join "`n"}
         Add-CMScriptDeploymentType @DeploymentTypeProperties
 
         # Move Application in Folder
@@ -209,6 +212,9 @@ $script:NewVersion = $null
 $script:Publisher = 'Gougelet Pierre-e'
 $script:templatename = 'Config_XnView_template.ps1'
 $To= $Config.To
+$From = $config.From
+$MailServer = $Config.MailServer
+$LocalDistribPath = $Config.LocalDistribPath
 #endregion Variables
 
 Try{
@@ -237,9 +243,10 @@ Try{
             LocalizedDescription = "XnView — кроссплатформенная программа для просмотра изображений, поддерживающая просмотр более 400 и сохранение до 50 различных графических и мультимедийных форматов файлов."
             IconLocationFile = "$((get-item $psscriptroot).parent.FullName)\Applications\$Application\icon.png"
             Scriptpath = "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
+            LocalScriptpath = "$LocalDistribPath\$version\SupportFiles\DetectionMethod.ps1"
         }
         New-Application @NewApplication_Properties
-        Send-EmailAnonymously -Body $script:Body -To $To
+        Send-EmailAnonymously -Body $global:Body -To $To -SMTPServer $MailServer -From $From
     }
 }
 catch{}

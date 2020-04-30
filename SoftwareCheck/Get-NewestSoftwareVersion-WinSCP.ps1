@@ -88,7 +88,9 @@ function New-Application {
         [PARAMETER(Mandatory=$True)]$UninstallCommand,
         [PARAMETER(Mandatory=$False)]$LocalizedDescription,
         [PARAMETER(Mandatory=$False)]$IconLocationFile,
-        [PARAMETER(Mandatory=$True)]$Scriptpath
+        [PARAMETER(Mandatory=$True)]$Scriptpath,
+        [PARAMETER(Mandatory=$True)]$LocalScriptpath,
+        [PARAMETER(Mandatory=$False)]$UserCategory
     )
     Write-Host "Get-Module ConfigurationManage"  -ForegroundColor DarkGreen
     #region Import the ConfigurationManager module and change PSDrive
@@ -118,7 +120,8 @@ function New-Application {
         InstallationProgramVisibility = 'Normal'
         UninstallCommand = $UninstallCommand
         ScriptLanguage = 'PowerShell' 
-        ScriptFile = $scriptPath}
+        #ScriptFile = $scriptPath}
+    ScriptText = (Get-Content -Path $LocalScriptpath) -join "`n"}
         Add-CMScriptDeploymentType @DeploymentTypeProperties
 
         # Move Application in Folder
@@ -199,6 +202,9 @@ $script:NewVersion = $null
 $script:Publisher = 'Martin Prikryl'
 $script:templatename = 'Config_WinSCP_template.ps1'
 $To= $Config.To
+$From = $config.From
+$MailServer = $Config.MailServer
+$LocalDistribPath = $Config.LocalDistribPath
 #endregion Variables
 
 Try{
@@ -227,9 +233,10 @@ Try{
             LocalizedDescription = "WinSCP — свободный графический клиент протоколов SFTP и SCP, предназначенный для Windows. Распространяется по лицензии GNU GPL. Обеспечивает защищённое копирование файлов между компьютером и серверами, поддерживающими эти протоколы."
             IconLocationFile = "$((get-item $psscriptroot).parent.FullName)\Applications\$Application\icon.png"
             Scriptpath = "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
+            LocalScriptpath = "$LocalDistribPath\$version\SupportFiles\DetectionMethod.ps1"
         }
         New-Application @NewApplication_Properties
-        Send-EmailAnonymously -Body $script:Body -To $To
+        Send-EmailAnonymously -Body $global:Body -To $To -SMTPServer $MailServer -From $From
     }
 }
 catch{}

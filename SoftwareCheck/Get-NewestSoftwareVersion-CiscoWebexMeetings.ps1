@@ -1,13 +1,60 @@
-﻿# Получает с сайта последнюю версию Total Commander и если у нас нет такой версии, то сначала копирует шаблон устанвоки PSADT, заменяет в неём значения. После этого создаёт приложение в SCCM с заполнением всех нужых атрибутов.
+﻿#region Function
+function Get-MSPProductcode {
+    param (
+        [IO.FileInfo] $patchnamepath
+    )
+    try {
+        $wi = New-Object -com WindowsInstaller.Installer
+        $mspdb = $wi.GetType().InvokeMember("OpenDatabase", "InvokeMethod", $Null, $wi, $($patchnamepath.FullName, 32))
+        $su = $mspdb.GetType().InvokeMember("SummaryInformation", "GetProperty", $Null, $mspdb, $Null)
+        #$pc = $su.GetType().InvokeMember("PropertyCount", "GetProperty", $Null, $su, $Null)
+          
+        [String] $productcode = $su.GetType().InvokeMember("Property", "GetProperty", $Null, $su, 7)
+        return $productcode
+    }
+    catch {
+        Write-Output $_.Exception.Message
+        return $NULL
+    }
+}
 
-#region Function
-function Get-TotalCommander ($URLPage){
+function Get-MSIPropertySet {
+    param (
+        [parameter(Mandatory=$true,ValueFromPipelineByPropertyName=$true)]
+        [ValidateScript({Test-Path $_})]
+        [string]$MSIFilePath
+    )
+    try {
+        [IO.FileInfo]$Path = Get-Item $MSIFilePath
+        $WindowsInstaller = New-Object -com WindowsInstaller.Installer
+        $MSIDatabase = $WindowsInstaller.GetType().InvokeMember("OpenDatabase","InvokeMethod",$Null,$WindowsInstaller,@($Path.FullName,0))
+        $View = $MSIDatabase.GetType().InvokeMember("OpenView","InvokeMethod",$null,$MSIDatabase,"SELECT * FROM Property")
+        $View.GetType().InvokeMember("Execute", "InvokeMethod", $null, $View, $null)
+        $hash = @{}
+        while($Record = $View.GetType().InvokeMember("Fetch","InvokeMethod",$null,$View,$null))
+        {
+            $hash += (@{ $Record.GetType().InvokeMember("StringData","GetProperty",$null,$Record,1) = $Record.GetType().InvokeMember("StringData","GetProperty",$null,$Record,2)})
+        }
+        $result = [PSCustomObject]$hash
+        $View.GetType().InvokeMember("Close","InvokeMethod",$null,$View,$null)
+        return $result
+    }
+    catch {
+        Write-Output $_.Exception.Message
+        return $NULL
+    }
+}
+
+function Get-CiscoWebex  ($URLPage){
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-    $result = Invoke-WebRequest $URLPage -UseBasicParsing #-Proxy $ProxyURL -ProxyUseDefaultCredentials
-    $result.Content -match 'version [0-9\.a-z]+ of Total Commander' | Out-Null
-    $script:Version = $Matches[0] -replace 'version ' -replace ' of Total Commander'
+    # We can fing version on site, so we need to download file, and after that take version from file
+    $DownloadURL = $URLPage
+    Remove-Item -Path "$DistribPath\CiscoWebexMeetings-temp.msi" -Force -ErrorAction SilentlyContinue
+    Invoke-WebRequest -Uri $DownLoadURL -OutFile "$DistribPath\CiscoWebexMeetings-temp.msi" -UseBasicParsing -Proxy $ProxyURL -ProxyUseDefaultCredentials -UserAgent [Microsoft.PowerShell.Commands.PSUserAgent]::FireFox
+    
+    $script:Version = (Get-MSIPropertySet -MsiFile "$DistribPath\CiscoWebexMeetings-temp.msi").ProductVersion
     $script:FileName = $script:FileName -replace '%version%', $script:version
-    $DownloadURL = ($result.Links | ? {$_.OuterHTML -like '*64-bit+32-bit*' -and $_.href -like 'https:*'}).href
+    
     Write-Host "-===========-" -ForegroundColor Green
     Write-Host "Product:  $script:Application"
     Write-Host "Search link: $URLPage"
@@ -19,6 +66,7 @@ function Get-TotalCommander ($URLPage){
     {
         write-host "Версия уже есть"
         $script:NewVersion = $false
+        Remove-Item -Path "$DistribPath\CiscoWebexMeetings-temp.msi" -Force
     }
     Else
     {
@@ -30,7 +78,6 @@ function Get-TotalCommander ($URLPage){
         # Копирую шаблон PSADT
         Copy-Item $PSADTTemplatePath -Destination "$DistribPath\$version" -Recurse
         Copy-Item -Path "$DistribPath\$version\SupportFiles\Config files\$script:templatename" -Destination "$DistribPath\$version\SupportFiles\Config.ps1" -Force
-
         (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appVersion%', "$version") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
         (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%FileName%', "$FileName") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
         (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%Publisher%', "$script:Publisher") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
@@ -43,10 +90,9 @@ function Get-TotalCommander ($URLPage){
         (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appName%', "$script:Application") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
         (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appDetectionName%', "$script:Application_detection") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
         
-        # Копирую файл лицензий
-        #Copy-Item -Path '\\SCCMServer.contoso.com\Sources\Applications\Total Commander\License\wincmd.key' -Destination "$DistribPath\$version\Files"
         $destination = "$DistribPath\$version\Files\$FileName"
-        Invoke-WebRequest -Uri $DownLoadURL -OutFile $destination -UseBasicParsing -UserAgent [Microsoft.PowerShell.Commands.PSUserAgent]::FireFox #-Proxy $ProxyURL -ProxyUseDefaultCredentials 
+        Copy-Item -Path "$DistribPath\CiscoWebexMeetings-temp.msi" -Destination $destination -Force
+        #Invoke-WebRequest -Uri $DownLoadURL -OutFile $destination -UseBasicParsing -Proxy $ProxyURL -ProxyUseDefaultCredentials -UserAgent [Microsoft.PowerShell.Commands.PSUserAgent]::FireFox
     }
     Write-Host "-===========-" -ForegroundColor Green
 }
@@ -75,7 +121,7 @@ function New-Application {
         [PARAMETER(Mandatory=$True)]$LocalScriptpath,
         [PARAMETER(Mandatory=$False)]$UserCategory
     )
-    
+    Write-Host "Get-Module ConfigurationManage"  -ForegroundColor DarkGreen
     #region Import the ConfigurationManager module and change PSDrive
     if((Get-Module ConfigurationManager) -eq $null) {
         Import-Module "$($ENV:SMS_ADMIN_UI_PATH)\..\ConfigurationManager.psd1"
@@ -88,67 +134,69 @@ function New-Application {
     Set-Location "$($SiteCode):\"
     #endregion
 
-    #Create Application
-    New-CMApplication -Name $ApplicationName -LocalizedApplicationName $script:Application -Description $Description -SoftwareVersion $Version -Publisher $Publisher -LocalizedDescription $LocalizedDescription -IconLocationFile $IconLocationFile
+    #if (Test-Path $IconLocationFile)
+    #{
+        Write-Host "New-CMApplication" -ForegroundColor DarkGreen
+        #Create Application
+        New-CMApplication -Name $ApplicationName -LocalizedApplicationName $script:Application -Description $Description -SoftwareVersion $Version -Publisher $Publisher -LocalizedDescription $LocalizedDescription -IconLocationFile $IconLocationFile
 
-    $DeploymentTypeProperties = @{
-    InstallCommand = $InstallCommand
-    DeploymentTypeName = "[DT] $ApplicationName"
-    ApplicationName = $ApplicationName
-    ContentLocation = $SourcesPath
-    InstallationBehaviorType = 'InstallForSystem'
-    InstallationProgramVisibility = 'Normal'
-    UninstallCommand = $UninstallCommand
-    ScriptLanguage = 'PowerShell' 
-    #ScriptFile = $scriptPath}
-    ScriptText = (Get-Content -Path $LocalScriptpath) -join "`n"}
-    Add-CMScriptDeploymentType @DeploymentTypeProperties
+        $DeploymentTypeProperties = @{
+        InstallCommand = $InstallCommand
+        DeploymentTypeName = "[DT] $ApplicationName"
+        ApplicationName = $ApplicationName
+        ContentLocation = $SourcesPath
+        InstallationBehaviorType = 'InstallForSystem'
+        InstallationProgramVisibility = 'Normal'
+        UninstallCommand = $UninstallCommand
+        ScriptLanguage = 'PowerShell' 
+        #ScriptFile = $scriptPath}
+        ScriptText = (Get-Content -Path $LocalScriptpath) -join "`n"}
+        Add-CMScriptDeploymentType @DeploymentTypeProperties
 
-    # Move Application in Folder
-    if ($DirAppinConsole -ne $null) {
-        $Apps = Get-WmiObject -Namespace Root\SMS\Site_$SiteCode -Class SMS_ApplicationLatest -Filter "LocalizedDisplayName='$ApplicationName'"
-        Create-CollectionFolder -FolderName $DirAppinConsole -SCCMSiteName $SiteCode -ErrorAction SilentlyContinue
-        $TargetFolderID = Get-WmiObject -Namespace Root\SMS\Site_$SiteCode -Class SMS_ObjectContainerNode -Filter "ObjectType='6000' and Name='$DirAppinConsole'"
-        $CurrentFolderID = 0
-        $ObjectTypeID = 6000
-        $WMIConnectionString = "\\$ProviderMachineName\root\SMS\Site_$SiteCode" + ":SMS_objectContainerItem"
-        $WMIConnection = [WMIClass]$WMIConnectionString
-        $MoveItem = $WMIConnection.psbase.GetMethodParameters("MoveMembers")
-        $MoveItem.ContainerNodeID = $CurrentFolderID
-        $MoveItem.InstanceKeys = $Apps.ModelName
-        $MoveItem.ObjectType = $ObjectTypeID
-        $MoveItem.TargetContainerNodeID = $TargetFolderID.ContainerNodeID
-        $WMIConnection.psbase.InvokeMethod("MoveMembers", $MoveItem, $null)
-    }
+        # Move Application in Folder
+        if ($DirAppinConsole -ne $null) {
+            $Apps = Get-WmiObject -Namespace Root\SMS\Site_$SiteCode -Class SMS_ApplicationLatest -Filter "LocalizedDisplayName='$ApplicationName'"
+            $TargetFolderID = Get-WmiObject -Namespace Root\SMS\Site_$SiteCode -Class SMS_ObjectContainerNode -Filter "ObjectType='6000' and Name='$DirAppinConsole'"
+            $CurrentFolderID = 0
+            $ObjectTypeID = 6000
+            $WMIConnectionString = "\\$ProviderMachineName\root\SMS\Site_$SiteCode" + ":SMS_objectContainerItem"
+            $WMIConnection = [WMIClass]$WMIConnectionString
+            $MoveItem = $WMIConnection.psbase.GetMethodParameters("MoveMembers")
+            $MoveItem.ContainerNodeID = $CurrentFolderID
+            $MoveItem.InstanceKeys = $Apps.ModelName
+            $MoveItem.ObjectType = $ObjectTypeID
+            $MoveItem.TargetContainerNodeID = $TargetFolderID.ContainerNodeID
+            $WMIConnection.psbase.InvokeMethod("MoveMembers", $MoveItem, $null)
+        }
 
-    # Distribute content on DP
-    Start-CMContentDistribution -ApplicationName $ApplicationName -DistributionPointGroupName $DPGroup
+        # Distribute content on DP
+        Start-CMContentDistribution -ApplicationName $ApplicationName -DistributionPointGroupName $DPGroup
 
-    #Remove previous deployments
-    #Get-CMDeployment -CollectionName $TestCollection | Where-Object { $PSItem.ApplicationName -like "${Application}*" } | Remove-CMDeployment -Force
-    #Get-CMDeployment -CollectionName $ProdCollection | Where-Object { $PSItem.ApplicationName -like "${Application}*" } | Remove-CMDeployment -Force
-    #Get-CMDeployment -CollectionName $TestUserCollection | Where-Object { $PSItem.ApplicationName -like "${Application}*" } | Remove-CMDeployment -Force
+        #Remove previous deployments
+        #Get-CMDeployment -CollectionName $TestCollection | Where-Object { $PSItem.ApplicationName -like "${Application}*" } | Remove-CMDeployment -Force
+        #Get-CMDeployment -CollectionName $ProdCollection | Where-Object { $PSItem.ApplicationName -like "${Application}*" } | Remove-CMDeployment -Force
+        #Get-CMDeployment -CollectionName $TestUserCollection | Where-Object { $PSItem.ApplicationName -like "${Application}*" } | Remove-CMDeployment -Force
     
-    # Create deployments
-    #$DateTest = (Get-Date).AddHours(3)
-    #$DateProd = (Get-Date).AddDays(14)
-    #New-CMApplicationDeployment -Name $ApplicationName -CollectionName $TestCollection -DeployPurpose Required -UserNotification HideAll -AvailableDateTime $DateTest
-    #New-CMApplicationDeployment -Name $ApplicationName -CollectionName $ProdCollection -DeployPurpose Required -UserNotification HideAll -AvailableDateTime $DateProd
-    #New-CMApplicationDeployment -Name $ApplicationName -CollectionName $TestUserCollection -DeployPurpose Available -UserNotification DisplaySoftwareCenterOnly -AvailableDateTime $DateTest
-    # Return Location
-    Set-Location $SaveLocation
+        # Create deployments
+        #$DateTest = (Get-Date).AddHours(3)
+        #$DateProd = (Get-Date).AddDays(14)
+        #New-CMApplicationDeployment -Name $ApplicationName -CollectionName $TestCollection -DeployPurpose Required -UserNotification HideAll -AvailableDateTime $DateTest
+        #New-CMApplicationDeployment -Name $ApplicationName -CollectionName $ProdCollection -DeployPurpose Required -UserNotification HideAll -AvailableDateTime $DateProd
+        #New-CMApplicationDeployment -Name $ApplicationName -CollectionName $TestUserCollection -DeployPurpose Available -UserNotification DisplaySoftwareCenterOnly -AvailableDateTime $DateTest
+        # Return Location
+        Set-Location $SaveLocation
 
-    # Generate Mail Body
-    $script:Body += @"
-Created application '$ApplicationName'.
+        # Generate Mail Body
+        $script:Body += @"
+    Created application '$ApplicationName'.
 "@
-#Deployment assigned to '$TestCollection' starts on $DateTest.
-#Deployment assigned to '$ProdCollection' starts on $DateProd.
-#"@
+    #Deployment assigned to '$TestCollection' starts on $DateTest.
+    #Deployment assigned to '$ProdCollection' starts on $DateProd.
+    #"@
 
-    # Return Location
-    Set-Location $SaveLocation
-
+        # Return Location
+        Set-Location $SaveLocation
+    #}
 }
 
 function Send-EmailAnonymously {
@@ -165,60 +213,32 @@ function Send-EmailAnonymously {
     Send-MailMessage -From $From -To $To -Subject $Subject -Body $Body -SmtpServer $SMTPServer -Credential $Creds -Encoding Default -Priority High
 }
 
-Function Create-CollectionFolder
-{
-    param (
-        [PARAMETER(Mandatory=$True)]$FolderName,
-        [PARAMETER(Mandatory=$True)]$SCCMSiteName
-    )
-    #Object type 2 - Package Folder
-    #Object type 7 - Query Folder
-    #Object type 9 - Software Metering Folder
-    #Object type 14 - Operating System Installers Folder
-    #Object type 17 - State Migration GFolder
-    #Object type 18 - Image Package Folder
-    #Object type 19 - Boot Image Folder
-    #Object type 20 - Task Sequence Folder
-    #Object type 23 - Driver Package Folder
-    #Object type 25 - Driver Folder
-    #Object type 2011 - Configuration Baseline Folder
-    #Object type 5000 - Device Collection Folder
-    #Object type 5001 - User Collection Folder
-    #Object type 6000 - Application Folder
-    #Object type 6001 - Configuration Item Folder
-    $CollectionFolderArgs = @{
-        Name = $FolderName;
-        ObjectType = "6000";
-        ParentContainerNodeid = "0"
-    }
-    Set-WmiInstance -Class SMS_ObjectContainerNode -arguments $CollectionFolderArgs -namespace "root\SMS\Site_$SCCMSiteName" | Out-Null
-}
-
 #endregion Function
 
 #region Variables
 $Config = Get-Content "$PSScriptRoot\config.json" | ConvertFrom-Json 
-$script:Application = "Total Commander"
-$script:Application_detection = 'Total Commander'
-$script:DirAppinConsole = "Total Commander"
-$script:DistribPath = "$($Config.DistribPath)Total Commander"
-$script:FileName = 'tcmd%Version%x32_64.exe'
-$URLPage = 'https://www.ghisler.com/download.htm'
+$script:Application = "Cisco Webex Meetings"
+$script:Application_detection = 'Webex'
+$script:DirAppinConsole = "Cisco Webex Meetings"
+$script:DistribPath = "$($Config.DistribPath)Cisco Webex Meetings"
+$script:FileName = 'CiscoWebexMeetings-%Version%.msi'
+$URLPage = 'https://akamaicdn.webex.com/client/webexapp.msi'
 $script:Version = '1.1'
 $ProxyURL = $Config.ProxyURL
 $script:PSADTTemplatePath = "$((get-item $psscriptroot).parent.FullName)\Template\*" #"$($Config.PSADTTemplatePath)\*"
 $script:body = ''
 $script:NewVersion = $null
-$script:Publisher = 'Ghisler Software GmbH'
-$script:templatename = 'Config_TotalCommander_template.ps1'
+$script:Publisher = 'Cisco Webex LLC'
+$script:templatename = 'Config_CiscoWebexMeetings_template.ps1'
 $To= $Config.To
 $From = $config.From
 $MailServer = $Config.MailServer
 $LocalDistribPath = $Config.LocalDistribPath
+
 #endregion Variables
 
 Try{
-    Get-TotalCommander -URLPage $URLPage
+    Get-CiscoWebex -URLPage $URLPage
     if ($script:NewVersion -eq $true)
     {
         #New-Application
@@ -240,8 +260,8 @@ Try{
             TestUserCollection = "ALL | TEST | Application Catalog | Standard user"
             MSIFileName = '$script:FileName'
             UninstallCommand = """Deploy-Application.exe"" -DeploymentType Uninstall"
-            LocalizedDescription = "Total Commander — файловый менеджер с закрытым исходным кодом, работающий на платформах Microsoft Windows."
-            IconLocationFile = "$((get-item $psscriptroot).parent.FullName)\Applications\$Application\icon.png"
+            LocalizedDescription = "Cisco Webex Meeting — кроссплатформенная программа для проведения встреч."
+            IconLocationFile = "$DistribPath\icon.png"
             Scriptpath = "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
             LocalScriptpath = "$LocalDistribPath\$version\SupportFiles\DetectionMethod.ps1"
         }

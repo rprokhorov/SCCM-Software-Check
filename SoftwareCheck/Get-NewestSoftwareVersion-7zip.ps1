@@ -78,6 +78,7 @@ function New-Application {
         [PARAMETER(Mandatory=$False)]$LocalizedDescription,
         [PARAMETER(Mandatory=$False)]$IconLocationFile,
         [PARAMETER(Mandatory=$True)]$Scriptpath,
+        [PARAMETER(Mandatory=$True)]$LocalScriptpath,
         [PARAMETER(Mandatory=$False)]$UserCategory
     )
     
@@ -105,9 +106,10 @@ function New-Application {
     InstallationProgramVisibility = 'Normal'
     UninstallCommand = $UninstallCommand
     ScriptLanguage = 'PowerShell'
-    RebootBehavior = 'NoAction'
+    #RebootBehavior = 'NoAction'
     RequireUserInteraction = $true
-    ScriptFile = $scriptPath}
+    #ScriptFile = $scriptPath}
+    ScriptText = (Get-Content -Path $LocalScriptpath) -join "`n"}
     Add-CMScriptDeploymentType @DeploymentTypeProperties
     
     
@@ -173,8 +175,7 @@ function Send-EmailAnonymously {
 #endregion Function
 
 #region Variables
-$Config = Get-Content "$PSScriptRoot\config.json" | ConvertFrom-Json 
-$Config = Get-Content "$PSScriptRoot\config.json" | ConvertFrom-Json 
+$Config = Get-Content "$PSScriptRoot\config.json" | ConvertFrom-Json
 $global:Application = "7-zip"
 $global:Application_detection = '7-zip'
 $global:DirAppinConsole = "7-zip"
@@ -190,6 +191,9 @@ $global:NewVersion = $null
 $global:Publisher = 'Igor Pavlov'
 $global:templatename = 'Config_7zip_template.ps1'
 $To= $Config.To
+$From = $config.From
+$MailServer = $Config.MailServer
+$LocalDistribPath = $Config.LocalDistribPath
 #endregion Variables
 
 Try{
@@ -218,9 +222,10 @@ Try{
             LocalizedDescription = "7-Zip — свободный файловый архиватор с высокой степенью сжатия данных. Поддерживает несколько алгоритмов сжатия и множество форматов данных, включая собственный формат 7z c высокоэффективным алгоритмом сжатия LZMA."
             IconLocationFile = "$DistribPath\icon.png"
             Scriptpath = "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
+            LocalScriptpath = "$LocalDistribPath\$version\SupportFiles\DetectionMethod.ps1"
         }
         New-Application @NewApplication_Properties
-        Send-EmailAnonymously -Body $global:Body -To $To
+        Send-EmailAnonymously -Body $global:Body -To $To -SMTPServer $MailServer -From $From
     }
 }
 catch{}

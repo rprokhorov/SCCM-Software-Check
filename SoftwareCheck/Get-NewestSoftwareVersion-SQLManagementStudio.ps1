@@ -78,6 +78,7 @@ function New-Application {
         [PARAMETER(Mandatory=$False)]$LocalizedDescription,
         [PARAMETER(Mandatory=$False)]$IconLocationFile,
         [PARAMETER(Mandatory=$True)]$Scriptpath,
+        [PARAMETER(Mandatory=$True)]$LocalScriptpath,
         [PARAMETER(Mandatory=$False)]$UserCategory
     )
     
@@ -105,9 +106,10 @@ function New-Application {
     InstallationProgramVisibility = 'Normal'
     UninstallCommand = $UninstallCommand
     ScriptLanguage = 'PowerShell'
-    RebootBehavior = 'NoAction'
+    #RebootBehavior = 'NoAction'
     RequireUserInteraction = $true
-    ScriptFile = $scriptPath}
+    #ScriptFile = $scriptPath}
+    ScriptText = (Get-Content -Path $LocalScriptpath) -join "`n"}
     Add-CMScriptDeploymentType @DeploymentTypeProperties
     
     
@@ -219,6 +221,9 @@ $script:NewVersion = $null
 $script:Publisher = 'Microsoft'
 $script:templatename = 'Config_SQLManagemetStudio_template.ps1'
 $To= $Config.To
+$From = $config.From
+$MailServer = $Config.MailServer
+$LocalDistribPath = $Config.LocalDistribPath
 #endregion Variables
 
 Try{
@@ -247,9 +252,10 @@ Try{
             LocalizedDescription = "SQL Server Management Studio - Интегрированная среда для управления SQL. SSMS предоставляет средства для настройки, наблюдения и администрирования экземпляров SQL. С помощью SSMS можно развертывать, отслеживать и обновлять компоненты уровня данных, используемые вашими приложениями, а также создавать запросы и скрипты."
             IconLocationFile = "$((get-item $psscriptroot).parent.FullName)\Applications\$Application\icon.png"
             Scriptpath = "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
+            LocalScriptpath = "$LocalDistribPath\$version\SupportFiles\DetectionMethod.ps1"
         }
         New-Application @NewApplication_Properties
-        Send-EmailAnonymously -Body $script:Body -To $To
+        Send-EmailAnonymously -Body $global:Body -To $To -SMTPServer $MailServer -From $From
     }
 }
 catch{}

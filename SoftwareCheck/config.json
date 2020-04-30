@@ -1,5 +1,8 @@
 {
     "to":"LikePatchMyPC@rprokhorov.ru",
+    "From":"SCCM_service@rprokhorov.ru",
+    "MailServer":"mail.rprokhorov.ru",
+    "LocalDistribPath":"D:\\Sources\\Applications\\",
     "DistribPath":"\\\\SCCMandSQL\\Sources\\Applications\\",
     "ProxyURL" : "http://ProxyServer.contoso.com:8080",
     "PSADTTemplatePath" : "\\SCCMandSQL.rprokhorov.local\\Sources\\Applications\\_PSADT Template\\%AppName% %Version%\\*",

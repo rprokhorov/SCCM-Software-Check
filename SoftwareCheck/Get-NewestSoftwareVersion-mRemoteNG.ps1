@@ -69,6 +69,7 @@ function New-Application {
         [PARAMETER(Mandatory=$False)]$LocalizedDescription,
         [PARAMETER(Mandatory=$False)]$IconLocationFile,
         [PARAMETER(Mandatory=$True)]$Scriptpath,
+        [PARAMETER(Mandatory=$True)]$LocalScriptpath,
         [PARAMETER(Mandatory=$False)]$UserCategory
     )
     
@@ -96,9 +97,10 @@ function New-Application {
     InstallationProgramVisibility = 'Normal'
     UninstallCommand = $UninstallCommand
     ScriptLanguage = 'PowerShell'
-    RebootBehavior = 'NoAction'
+    #RebootBehavior = 'NoAction'
     RequireUserInteraction = $true
-    ScriptFile = $scriptPath}
+    #ScriptFile = $scriptPath}
+    ScriptText = (Get-Content -Path $LocalScriptpath) -join "`n"}
     Add-CMScriptDeploymentType @DeploymentTypeProperties
     
     
@@ -210,6 +212,9 @@ $script:NewVersion = $null
 $script:Publisher = 'Next Generation Software'
 $script:templatename = 'Config_mRemoteNG_template.ps1'
 $To= $Config.To
+$From = $config.From
+$MailServer = $Config.MailServer
+$LocalDistribPath = $Config.LocalDistribPath
 #endregion Variables
 
 Try{
@@ -238,9 +243,10 @@ Try{
             LocalizedDescription = "mRemoteNG - это менеджер удаленных подключений с ""вкладочным"" интерфейсом, который позволяет одновременно работать с несколькими сессиями. Программа поддерживает протоколы VNC, SSH, RDP, ICA, Telnet, HTTP/HTTPS и RLOGIN. В зависимости от используемого протокола, mRemoteNG может работать в разных режимах. Например, SSH используется для передачи данных на удаленный компьютер, а VNC - для трансляции рабочего стола. Некоторые протоколы позволяют осуществлять удаленную проверку портов."
             IconLocationFile = "$((get-item $psscriptroot).parent.FullName)\Applications\$Application\icon.png"
             Scriptpath = "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
+            LocalScriptpath = "$LocalDistribPath\$version\SupportFiles\DetectionMethod.ps1"
         }
         New-Application @NewApplication_Properties
-        Send-EmailAnonymously -Body $script:Body -To $To
+        Send-EmailAnonymously -Body $global:Body -To $To -SMTPServer $MailServer -From $From
     }
 }
 catch{}
