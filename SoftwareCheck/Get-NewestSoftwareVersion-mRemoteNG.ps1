@@ -243,10 +243,10 @@ Try{
             LocalizedDescription = "mRemoteNG - это менеджер удаленных подключений с ""вкладочным"" интерфейсом, который позволяет одновременно работать с несколькими сессиями. Программа поддерживает протоколы VNC, SSH, RDP, ICA, Telnet, HTTP/HTTPS и RLOGIN. В зависимости от используемого протокола, mRemoteNG может работать в разных режимах. Например, SSH используется для передачи данных на удаленный компьютер, а VNC - для трансляции рабочего стола. Некоторые протоколы позволяют осуществлять удаленную проверку портов."
             IconLocationFile = "$((get-item $psscriptroot).parent.FullName)\Applications\$Application\icon.png"
             Scriptpath = "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
-            LocalScriptpath = "$LocalDistribPath\$version\SupportFiles\DetectionMethod.ps1"
+            LocalScriptpath = "$LocalDistribPath\$script:Application\$version\SupportFiles\DetectionMethod.ps1"
         }
         New-Application @NewApplication_Properties
-        Send-EmailAnonymously -Body $global:Body -To $To -SMTPServer $MailServer -From $From
+        Send-EmailAnonymously -Body $script:Body -To $To -SMTPServer $MailServer -From $From
     }
 }
 catch{}

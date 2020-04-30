@@ -23,43 +23,43 @@ function Get-VMwareTools ($URLPage){
 
     $FileName = ($HTMLObject.getElementsByTagName('A') | Where-Object { $_.pathname -like 'VMware-tools-*' } ).pathname
   
-    $global:Version = $FileName.TrimStart('VMware-tools-').TrimEnd('-x86_64.exe').Replace('-','.')
+    $script:Version = $FileName.TrimStart('VMware-tools-').TrimEnd('-x86_64.exe').Replace('-','.')
   
     $DownloadURL = "https://packages.vmware.com/tools/releases/$($LastDir)windows/x64/$FileName"
     
 
     Write-Host "-===========-" -ForegroundColor Green
-    Write-Host "Product:  $global:Application"
+    Write-Host "Product:  $script:Application"
     Write-Host "Search link: $URLPage"
     Write-Host "Version: "$version
     Write-host "Download Link:    "$DownLoadURL
     Write-Host "Download path: $DistribPath\$version\$FileName"
-    $global:ApplicationName = "$global:Application $global:version"
-    $global:body  = "Product:  $global:Application `rSearch link: $URLPage `rVersion: $version`rLink: $DownLoadURL `rDownload path: $DistribPath\$version\ `rCreated application: $ApplicationName `r"
+    $script:ApplicationName = "$script:Application $script:version"
+    $script:body  = "Product:  $script:Application `rSearch link: $URLPage `rVersion: $version`rLink: $DownLoadURL `rDownload path: $DistribPath\$version\ `rCreated application: $ApplicationName `r"
     
     # Создаём папку куда будем скачивать дистибутив
     if (Test-Path "filesystem::$DistribPath\$version")
     {
         write-host "Такой файл у нас уже есть"
-        $global:NewVersion = $false
+        $script:NewVersion = $false
     }
     Else
     {
-        $global:NewVersion = $true
+        $script:NewVersion = $true
         Write-Host "Начинаю закачку файла"
         cd C:
         New-Item -ItemType Directory -Path "$DistribPath\$version"  -Force
         # Копирую шаблон для PSADT
-        Copy-Item -Path "$global:DistribPath\PSADT template\*" -Destination "$DistribPath\$version" -Recurse
+        Copy-Item -Path "$script:DistribPath\PSADT template\*" -Destination "$DistribPath\$version" -Recurse
         # Заменяю переменные в файле шаблона на переменные из скрипта.
         (Get-Content "$DistribPath\$version\Deploy-Application.ps1").replace('%version%', "$version") | Set-Content "$DistribPath\$version\Deploy-Application.ps1"
         (Get-Content "$DistribPath\$version\Deploy-Application.ps1").replace('%FileName%', "$FileName") | Set-Content "$DistribPath\$version\Deploy-Application.ps1"
-        (Get-Content "$DistribPath\$version\Deploy-Application.ps1").replace('%Publisher%', "$global:Publisher") | Set-Content "$DistribPath\$version\Deploy-Application.ps1"
-        (Get-Content "$DistribPath\$version\Deploy-Application.ps1").replace('%ApplicationName%', "$global:Application") | Set-Content "$DistribPath\$version\Deploy-Application.ps1"
-        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%version%', "$global:Version") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
-        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%version_detection%', "$global:Version") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
-        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%ApplicationName%', "$global:Application") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
-        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%ApplicationName_Detection%', "$global:Application_detection") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
+        (Get-Content "$DistribPath\$version\Deploy-Application.ps1").replace('%Publisher%', "$script:Publisher") | Set-Content "$DistribPath\$version\Deploy-Application.ps1"
+        (Get-Content "$DistribPath\$version\Deploy-Application.ps1").replace('%ApplicationName%', "$script:Application") | Set-Content "$DistribPath\$version\Deploy-Application.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%version%', "$script:Version") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%version_detection%', "$script:Version") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%ApplicationName%', "$script:Application") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%ApplicationName_Detection%', "$script:Application_detection") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
         # Указываем куда будем сохранять скачиваемый файл
         $destination = "$DistribPath\$version\Files\$FileName"
         # Скачивание файла
@@ -111,7 +111,7 @@ function New-Application {
     #endregion
 
     #Create Application
-    New-CMApplication -Name $ApplicationName -LocalizedApplicationName $global:Application -Description $Description -SoftwareVersion $Version -Publisher $Publisher -LocalizedDescription $LocalizedDescription -IconLocationFile $IconLocationFile
+    New-CMApplication -Name $ApplicationName -LocalizedApplicationName $script:Application -Description $Description -SoftwareVersion $Version -Publisher $Publisher -LocalizedDescription $LocalizedDescription -IconLocationFile $IconLocationFile
 
     #$DetectionFileProperties = @{
     #    FileName = 'AcroRd32.exe';
@@ -194,7 +194,7 @@ function Send-EmailAnonymously {
         $SMTPServer = "SMTPServer.contoso.com",
         $From = "SCCMServer@contoso.com",
         [PARAMETER(Mandatory=$True)]$To,
-        $Subject = "Available new version $global:Application",
+        $Subject = "Available new version $script:Application",
         $Body
     )
     $PWord = ConvertTo-SecureString -String "anonymous" -AsPlainText -Force
@@ -206,17 +206,17 @@ function Send-EmailAnonymously {
 
 #region Variables
 $Config = Get-Content "$PSScriptRoot\config.json" | ConvertFrom-Json 
-$global:Application = "VMware Tools"
-$global:Application_detection = 'VMware Tools'
-$global:DirAppinConsole = "VMware Tools"
-$global:DistribPath = "$($Config.DistribPath)\VMware\VMware Tools"
-#$global:FileName = 'VMware-tools-%version%-x86_64.exe'
+$script:Application = "VMware Tools"
+$script:Application_detection = 'VMware Tools'
+$script:DirAppinConsole = "VMware Tools"
+$script:DistribPath = "$($Config.DistribPath)\VMware\VMware Tools"
+#$script:FileName = 'VMware-tools-%version%-x86_64.exe'
 $URLPage = "https://packages.vmware.com/tools/releases/index.html"
-$global:version = '1.0'
+$script:version = '1.0'
 $ProxyURL = $Config.ProxyURL
-$global:body = ''
-$global:NewVersion = $null
-$global:Publisher = 'VMware, Inc.'
+$script:body = ''
+$script:NewVersion = $null
+$script:Publisher = 'VMware, Inc.'
 $To= $Config.To
 $From = $config.From
 $MailServer = $Config.MailServer
@@ -225,36 +225,36 @@ $LocalDistribPath = $Config.LocalDistribPath
 
 try{
     Get-VMwareTools -URLPage $URLPage
-    if ($global:NewVersion -eq $true)
+    if ($script:NewVersion -eq $true)
     {
         #New-Application
-        $global:ApplicationName = "$global:Application $global:version"
+        $script:ApplicationName = "$script:Application $script:version"
         $NewApplication_Properties = @{
-            ApplicationName = "$global:ApplicationName"
-            SourcesPath = "$global:DistribPath\$global:version"
+            ApplicationName = "$script:ApplicationName"
+            SourcesPath = "$script:DistribPath\$script:version"
             ProviderMachineName = $Config.ProviderMachineName
             SiteCode = $Config.SiteCode
-            Application = $global:Application
-            DirAppinConsole = $global:DirAppinConsole
-            Description = "$global:Application application version: $($global:version) `rCreated by Script"
-            Version = $global:Version
-            Publisher = $global:Publisher
+            Application = $script:Application
+            DirAppinConsole = $script:DirAppinConsole
+            Description = "$script:Application application version: $($script:version) `rCreated by Script"
+            Version = $script:Version
+            Publisher = $script:Publisher
             InstallCommand = "Deploy-Application.exe"
             DPGroup = 'Distribution Point Group'
             # TestCollection = "DA | Adobe Acrobat Reader DC - Russian | Pilot | Required"
             # ProdCollection = "DA | Adobe Acrobat Reader DC - Russian | Prod | Required"
             # TestUserCollection = "ALL | TEST | Application Catalog | Standard user"
             DeviceAvailableCollection = "DA | All Servers | VMware Tools | Prod | Available"
-            MSIFileName = '$global:FileName'
+            MSIFileName = '$script:FileName'
             UninstallCommand = """Deploy-Application.exe"" -DeploymentType Uninstall"
             LocalizedDescription = 'VMware Tools improves the performance and management of the virtual machine.'
-            IconLocationFile = "$global:DistribPath\icon.png"
+            IconLocationFile = "$script:DistribPath\icon.png"
             Scriptpath = "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
-            LocalScriptpath = "$LocalDistribPath\$version\SupportFiles\DetectionMethod.ps1"
+            LocalScriptpath = "$LocalDistribPath\$script:Application\$version\SupportFiles\DetectionMethod.ps1"
         }
     
         New-Application @NewApplication_Properties
-        Send-EmailAnonymously -Body $global:Body -To $To -SMTPServer $MailServer -From $From
+        Send-EmailAnonymously -Body $script:Body -To $To -SMTPServer $MailServer -From $From
     }
 }
 catch{}

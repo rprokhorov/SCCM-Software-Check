@@ -9,28 +9,28 @@ function Get-AdobeReaderDC ($URLPage){
     $URL = "https://supportdownloads.adobe.com/support/downloads/$(($res.Links | Where-Object {$_.OuterHTML -like '*Adobe Acrobat Reader DC (Continuous Track) update - All languages*'})[0].href)"
     $Result = Invoke-WebRequest -Uri $URL -UseBasicParsing #-Proxy $ProxyURL -ProxyUseDefaultCredentials
     $Result.RawContent -match 'Adobe Reader [0-9\.]+ for Windows' | Out-Null
-    $global:Version = $Matches[0] -replace 'Adobe Reader 20', '' -replace ' for Windows', ''
+    $script:Version = $Matches[0] -replace 'Adobe Reader 20', '' -replace ' for Windows', ''
     $URLDownload = "https://supportdownloads.adobe.com/support/downloads/$(($Result.Links | Where-Object {$_.OuterHTML -like '*Proceed to Download*'}).href)" -replace '&amp;', '&'
     $Result = Invoke-WebRequest -Uri $URLDownload -UseBasicParsing #-Proxy $ProxyURL -ProxyUseDefaultCredentials
     $DownLoadURL = ($Result.Links | Where-Object {$_.OuterHTML -like '*Download Now*'}).href
-    $global:FileName = ($DownLoadURL -split '/')[-1]
+    $script:FileName = ($DownLoadURL -split '/')[-1]
     Write-Host "-===========-" -ForegroundColor Green
-    Write-Host "Product:  $global:Application"
+    Write-Host "Product:  $script:Application"
     Write-Host "Search link: $URLPage"
     Write-Host "Version: "$version
     Write-host "Download Link:    "$DownLoadURL
     Write-Host "Download path: $DistribPath\$version\$FileName"
-    $global:body  = "Product:  $global:Application `rSearch link: $URLPage `rVersion: $version`rLink: $DownLoadURL `rDownload path: $DistribPath\$version\$FileName `r"
-    $global:ApplicationName = "$global:Application $global:version"
+    $script:body  = "Product:  $script:Application `rSearch link: $URLPage `rVersion: $version`rLink: $DownLoadURL `rDownload path: $DistribPath\$version\$FileName `r"
+    $script:ApplicationName = "$script:Application $script:version"
     # Создаём папку куда будем скачивать дистибутив
     if (Test-Path "filesystem::$DistribPath\$version")
     {
         write-host "Такой файл у нас уже есть"
-        $global:NewVersion = $false
+        $script:NewVersion = $false
     }
     Else
     {
-        $global:NewVersion = $true
+        $script:NewVersion = $true
         Write-Host "Начинаю закачивание новой версии"
         Set-Location C:
         #cd C:
@@ -38,18 +38,18 @@ function Get-AdobeReaderDC ($URLPage){
         # Копирую шаблон PSADT
         Copy-Item $PSADTTemplatePath -Destination "$DistribPath\$version" -Recurse
         Copy-Item "$DistribPath\Files\*" -Destination "$DistribPath\$version\Files" -Recurse
-        Copy-Item -Path "$DistribPath\$version\SupportFiles\Config files\$global:templatename" -Destination "$DistribPath\$version\SupportFiles\Config.ps1" -Force
+        Copy-Item -Path "$DistribPath\$version\SupportFiles\Config files\$script:templatename" -Destination "$DistribPath\$version\SupportFiles\Config.ps1" -Force
         (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appVersion%', "$version") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
         (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%FileName%', "$FileName") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
-        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%Publisher%', "$global:Publisher") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
-        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appName%', "$global:Application") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
-        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appDetectionVersion%', "$global:Version") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
-        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appDetectionName%', "$global:Application_detection") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%Publisher%', "$script:Publisher") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appName%', "$script:Application") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appDetectionVersion%', "$script:Version") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appDetectionName%', "$script:Application_detection") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
         
-        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appVersion%', "$global:Version") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
-        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appDetectionVersion%', "$global:Version") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
-        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appName%', "$global:Application") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
-        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appDetectionName%', "$global:Application_detection") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appVersion%', "$script:Version") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appDetectionVersion%', "$script:Version") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appName%', "$script:Application") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appDetectionName%', "$script:Application_detection") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
         
         $destination = "$DistribPath\$version\Files\$FileName"
         Invoke-WebRequest -Uri $DownLoadURL -OutFile $destination -UseBasicParsing -UserAgent [Microsoft.PowerShell.Commands.PSUserAgent]::FireFox #-Proxy $ProxyURL -ProxyUseDefaultCredentials 
@@ -95,7 +95,7 @@ function New-Application {
     #endregion
 
     #Create Application
-    New-CMApplication -Name $ApplicationName -LocalizedApplicationName $global:Application -Description $Description -SoftwareVersion $Version -Publisher $Publisher -LocalizedDescription $LocalizedDescription -IconLocationFile $IconLocationFile
+    New-CMApplication -Name $ApplicationName -LocalizedApplicationName $script:Application -Description $Description -SoftwareVersion $Version -Publisher $Publisher -LocalizedDescription $LocalizedDescription -IconLocationFile $IconLocationFile
     Set-CMApplication -Name $ApplicationName -UserCategory $UserCategory -AutoInstall $true
     $DeploymentTypeProperties = @{
     InstallCommand = $InstallCommand
@@ -148,7 +148,7 @@ function New-Application {
     Set-Location $SaveLocation
 
     # Generate Mail Body
-    $global:Body += @"
+    $script:Body += @"
 Created application '$ApplicationName'.
 "@
 #Deployment assigned to '$TestCollection' starts on $DateTest.
@@ -166,7 +166,7 @@ function Send-EmailAnonymously {
         $SMTPServer = "SMTPServer.contoso.com",
         $From = "SCCMServer@contoso.com",
         [PARAMETER(Mandatory=$True)]$To,
-        $Subject = "Available new version $global:Application",
+        $Subject = "Available new version $script:Application",
         $Body
     )
     $PWord = ConvertTo-SecureString -String "anonymous" -AsPlainText -Force
@@ -208,19 +208,19 @@ Function Create-CollectionFolder
 
 #region Variables
 $Config = Get-Content "$PSScriptRoot\config.json" | ConvertFrom-Json 
-$global:Application = "Adobe Acrobat Reader DC"
-$global:Application_detection = "Adobe Acrobat Reader DC"
-$global:DirAppinConsole = "Adobe Acrobat Reader DC"
-$global:DistribPath = "$($Config.DistribPath)Adobe\Acrobat Reader DC - Russian"
-$global:FileName = 'example.msp'
+$script:Application = "Adobe Acrobat Reader DC"
+$script:Application_detection = "Adobe Acrobat Reader DC"
+$script:DirAppinConsole = "Adobe Acrobat Reader DC"
+$script:DistribPath = "$($Config.DistribPath)Adobe\Acrobat Reader DC - Russian"
+$script:FileName = 'example.msp'
 #$URLPage = 'https://supportdownloads.adobe.com/support/downloads/new.jsp' For all Platforms
 $URLPage = 'https://supportdownloads.adobe.com/support/downloads/product.jsp?product=10&platform=Windows' # For Windows only
-$global:Version = '1.1'
-$global:PSADTTemplatePath = "$((get-item $psscriptroot).parent.FullName)\Template\*" #"$($Config.PSADTTemplatePath)\*"
+$script:Version = '1.1'
+$script:PSADTTemplatePath = "$((get-item $psscriptroot).parent.FullName)\Template\*" #"$($Config.PSADTTemplatePath)\*"
 $ProxyURL = $Config.ProxyURL
-$global:body = ''
-$global:NewVersion = $null
-$global:templatename = 'Config_AdobeAcrobatReaderDC_template.ps1'
+$script:body = ''
+$script:NewVersion = $null
+$script:templatename = 'Config_AdobeAcrobatReaderDC_template.ps1'
 $To= $Config.To
 $From = $config.From
 $MailServer = $Config.MailServer
@@ -229,35 +229,35 @@ $LocalDistribPath = $Config.LocalDistribPath
 
 try{
     Get-AdobeReaderDC -URLPage $URLPage
-    if ($global:NewVersion -eq $true)
+    if ($script:NewVersion -eq $true)
     {
         #New-Application
-        $global:ApplicationName = "$global:Application $global:version"
+        $script:ApplicationName = "$script:Application $script:version"
         $NewApplication_Properties = @{
-            ApplicationName = "$global:ApplicationName"
-            SourcesPath = "$global:DistribPath\$global:version"
+            ApplicationName = "$script:ApplicationName"
+            SourcesPath = "$script:DistribPath\$script:version"
             ProviderMachineName = $Config.ProviderMachineName
             SiteCode = $Config.SiteCode
-            Application = $global:Application
-            DirAppinConsole = $global:DirAppinConsole
-            Description = "$global:Application application version: $($global:version) `rCreated by Script"
-            Version = $global:Version
+            Application = $script:Application
+            DirAppinConsole = $script:DirAppinConsole
+            Description = "$script:Application application version: $($script:version) `rCreated by Script"
+            Version = $script:Version
             Publisher = 'Adobe'
             InstallCommand = "Deploy-Application.exe" #"install.cmd"
             DPGroup = 'Distribution Point Group'
             TestCollection = "DA | Adobe Acrobat Reader DC - Russian | Pilot | Required"
             ProdCollection = "DA | Adobe Acrobat Reader DC - Russian | Prod | Required"
             TestUserCollection = "ALL | TEST | Application Catalog | Standard user"
-            MSIFileName = '$global:FileName'
+            MSIFileName = "$script:FileName"
             UserCategory = 'Without approval'
             UninstallCommand = """Deploy-Application.exe"" -DeploymentType Uninstall"
             LocalizedDescription = 'ПО Adobe Acrobat Reader DC — это бесплатный мировой стандарт, который используется для просмотра, печати и комментирования документов в формате PDF. Это единственное средство просмотра PDF-файлов, которое может открывать и взаимодействовать со всеми видами содержимого в PDF-формате, включая формы и мультимедийный контент.'
             IconLocationFile = "$((get-item $psscriptroot).parent.FullName)\Applications\$Application\icon.png"
             Scriptpath = "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
-            LocalScriptpath = "$LocalDistribPath\$version\SupportFiles\DetectionMethod.ps1"
+            LocalScriptpath = "$LocalDistribPath\$script:Application\$version\SupportFiles\DetectionMethod.ps1"
         }
         New-Application @NewApplication_Properties
-        Send-EmailAnonymously -Body $global:Body -To $To -SMTPServer $MailServer -From $From
+        Send-EmailAnonymously -Body $script:Body -To $To -SMTPServer $MailServer -From $From
     }
 }
 Catch{}

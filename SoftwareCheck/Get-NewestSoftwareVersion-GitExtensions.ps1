@@ -244,10 +244,10 @@ Try{
             LocalizedDescription = "Git Extensions - визуальный клиент системы управления версиями Git, позволяющий использовать Git без использования консольного интерфейса. "
             IconLocationFile = "$((get-item $psscriptroot).parent.FullName)\Applications\$Application\icon.png"
             Scriptpath = "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
-            LocalScriptpath = "$LocalDistribPath\$version\SupportFiles\DetectionMethod.ps1"
+            LocalScriptpath = "$LocalDistribPath\$script:Application\$version\SupportFiles\DetectionMethod.ps1"
         }
         New-Application @NewApplication_Properties
-        Send-EmailAnonymously -Body $global:Body -To $To -SMTPServer $MailServer -From $From
+        Send-EmailAnonymously -Body $script:Body -To $To -SMTPServer $MailServer -From $From
     }
 }
 catch{}

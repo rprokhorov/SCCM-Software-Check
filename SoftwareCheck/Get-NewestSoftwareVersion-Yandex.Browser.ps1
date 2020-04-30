@@ -5,44 +5,44 @@ function Get-YandexBrowser ($URLPage){
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     $result = Invoke-WebRequest $URLPage -Proxy $ProxyURL -ProxyUseDefaultCredentials -UseBasicParsing
     ($result.RawContent -match 'версия [0-9\.]+')
-    $global:Version = $Matches[0] -replace 'Версия ', ''
+    $script:Version = $Matches[0] -replace 'Версия ', ''
     $DownloadURL = ($result.Links | Where-Object {$_.href -like '*msi'}).href
-    $FileName = $FileName -replace '%Version%', $global:Version
+    $FileName = $FileName -replace '%Version%', $script:Version
     Write-Host "-===========-" -ForegroundColor Green
-    Write-Host "Product:  $global:Application"
+    Write-Host "Product:  $script:Application"
     Write-Host "Search link: $URLPage"
     Write-Host "Version: "$version
     Write-host "Download Link:    "$DownLoadURL
     Write-Host "Download path: $DistribPath\$version\$FileName"
-    $global:body  = "Product:  $global:Application `rSearch link: $URLPage `rVersion: $version`rLink: $DownLoadURL `rDownload path: $DistribPath\$version\$FileName `r"
-    $global:ApplicationName = "$global:Application $global:version"
+    $script:body  = "Product:  $script:Application `rSearch link: $URLPage `rVersion: $version`rLink: $DownLoadURL `rDownload path: $DistribPath\$version\$FileName `r"
+    $script:ApplicationName = "$script:Application $script:version"
     # Создаём папку куда будем скачивать дистибутив
     if (Test-Path "filesystem::$DistribPath\$version")
     {
         write-host "Такой файл у нас уже есть"
-        $global:NewVersion = $false
+        $script:NewVersion = $false
     }
     Else
     {
-        $global:NewVersion = $true
+        $script:NewVersion = $true
         Write-Host "Начинаю закачивание новой версии"
         Set-Location C:
         #cd C:
         New-Item -ItemType Directory -Path "$DistribPath\$version"  -Force
         # Копирую шаблон PSADT
         Copy-Item $PSADTTemplatePath -Destination "$DistribPath\$version" -Recurse
-        Copy-Item -Path "$DistribPath\$version\SupportFiles\Config files\$global:templatename" -Destination "$DistribPath\$version\SupportFiles\Config.ps1" -Force
+        Copy-Item -Path "$DistribPath\$version\SupportFiles\Config files\$script:templatename" -Destination "$DistribPath\$version\SupportFiles\Config.ps1" -Force
         (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appVersion%', "$version") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
         (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%FileName%', "$FileName") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
-        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%Publisher%', "$global:Publisher") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
-        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appName%', "$global:Application") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
-        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appDetectionVersion%', "$global:Version") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
-        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appDetectionName%', "$global:Application_detection") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%Publisher%', "$script:Publisher") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appName%', "$script:Application") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appDetectionVersion%', "$script:Version") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appDetectionName%', "$script:Application_detection") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
         
-        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appVersion%', "$global:Version") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
-        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appDetectionVersion%', "$global:Version") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
-        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appName%', "$global:Application") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
-        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appDetectionName%', "$global:Application_detection") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appVersion%', "$script:Version") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appDetectionVersion%', "$script:Version") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appName%', "$script:Application") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appDetectionName%', "$script:Application_detection") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
         
         $destination = "$DistribPath\$version\Files\$FileName"
         Invoke-WebRequest -Uri $DownLoadURL -OutFile $destination -UseBasicParsing -Proxy $ProxyURL -ProxyUseDefaultCredentials -UserAgent [Microsoft.PowerShell.Commands.PSUserAgent]::FireFox
@@ -92,7 +92,7 @@ function New-Application {
     #endregion
 
     #Create Application
-    New-CMApplication -Name $ApplicationName -LocalizedApplicationName $global:Application -Description $Description -SoftwareVersion $Version -Publisher $Publisher -LocalizedDescription $LocalizedDescription -IconLocationFile $IconLocationFile
+    New-CMApplication -Name $ApplicationName -LocalizedApplicationName $script:Application -Description $Description -SoftwareVersion $Version -Publisher $Publisher -LocalizedDescription $LocalizedDescription -IconLocationFile $IconLocationFile
 
     #$DetectionFileProperties = @{
     #    FileName = 'AcroRd32.exe';
@@ -158,7 +158,7 @@ function New-Application {
     Set-Location $SaveLocation
 
     # Generate Mail Body
-    $global:Body += @"
+    $script:Body += @"
 Created application '$ApplicationName'.
 "@
 #Deployment assigned to '$TestCollection' starts on $DateTest.
@@ -176,7 +176,7 @@ function Send-EmailAnonymously {
         $SMTPServer = "SMTPServer.contoso.com",
         $From = "SCCMServer@contoso.com",
         [PARAMETER(Mandatory=$True)]$To,
-        $Subject = "Available new version $global:Application",
+        $Subject = "Available new version $script:Application",
         $Body
     )
     $PWord = ConvertTo-SecureString -String "anonymous" -AsPlainText -Force
@@ -189,52 +189,52 @@ function Send-EmailAnonymously {
 
 #region Variables
 $Config = Get-Content "$PSScriptRoot\config.json" | ConvertFrom-Json 
-$global:Application = "Яндекс.Браузер"
-$global:Application_detection = "Yandex"
-$global:DirAppinConsole = "Yandex.Browser"
-$global:DistribPath = "$($Config.DistribPath)\Yandex.Browser"
-$global:FileName = 'yandex_msi_%Version%.msi'
+$script:Application = "Яндекс.Браузер"
+$script:Application_detection = "Yandex"
+$script:DirAppinConsole = "Yandex.Browser"
+$script:DistribPath = "$($Config.DistribPath)\Yandex.Browser"
+$script:FileName = 'yandex_msi_%Version%.msi'
 $URLPage = "https://browser.yandex.ru/corp/"
-$global:version = '1.0'
+$script:version = '1.0'
 $ProxyURL = $Config.ProxyURL
-$global:PSADTTemplatePath = $Config.PSADTTemplatePath
-$global:body = ''
-$global:NewVersion = $null
-$global:Publisher = 'ООО «ЯНДЕКС»'
-$global:templatename = 'Config_YandexBrowser_template.ps1'
+$script:PSADTTemplatePath = $Config.PSADTTemplatePath
+$script:body = ''
+$script:NewVersion = $null
+$script:Publisher = 'ООО «ЯНДЕКС»'
+$script:templatename = 'Config_YandexBrowser_template.ps1'
 $To= $Config.To
 $From = $config.From
 $MailServer = $Config.MailServer
 $LocalDistribPath = $Config.LocalDistribPath
 #endregion Variables
     Get-YandexBrowser -URLPage $URLPage
-    if ($global:NewVersion -eq $true)
+    if ($script:NewVersion -eq $true)
     {
         #New-Application
-        $global:ApplicationName = "$global:Application $global:version"
+        $script:ApplicationName = "$script:Application $script:version"
         $NewApplication_Properties = @{
-            ApplicationName = "$global:ApplicationName"
-            SourcesPath = "$global:DistribPath\$global:version"
+            ApplicationName = "$script:ApplicationName"
+            SourcesPath = "$script:DistribPath\$script:version"
             ProviderMachineName = $Config.ProviderMachineName
             SiteCode = $Config.SiteCode
-            Application = $global:Application
-            DirAppinConsole = $global:DirAppinConsole
-            Description = "$global:Application application version: $($global:version) `rCreated by Script"
-            Version = $global:Version
-            Publisher = $global:Publisher
+            Application = $script:Application
+            DirAppinConsole = $script:DirAppinConsole
+            Description = "$script:Application application version: $($script:version) `rCreated by Script"
+            Version = $script:Version
+            Publisher = $script:Publisher
             InstallCommand = "Deploy-Application.exe"
             DPGroup = 'Distribution Point Group'
             TestCollection = "DA | Adobe Acrobat Reader DC - Russian | Pilot | Required"
             ProdCollection = "DA | Adobe Acrobat Reader DC - Russian | Prod | Required"
             TestUserCollection = "ALL | TEST | Application Catalog | Standard user"
-            MSIFileName = '$global:FileName'
+            MSIFileName = '$script:FileName'
             UninstallCommand = """Deploy-Application.exe"" -DeploymentType Uninstall"
             LocalizedDescription = 'Яндекс.Браузер — корпоративный браузер, созданный компанией «Яндекс».'
-            IconLocationFile = "$global:DistribPath\icon.png"
+            IconLocationFile = "$script:DistribPath\icon.png"
             Scriptpath = "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
-            LocalScriptpath = "$LocalDistribPath\$version\SupportFiles\DetectionMethod.ps1"
+            LocalScriptpath = "$LocalDistribPath\$script:Application\$version\SupportFiles\DetectionMethod.ps1"
         }
     
         New-Application @NewApplication_Properties
-        Send-EmailAnonymously -Body $global:Body -To $To -SMTPServer $MailServer -From $From
+        Send-EmailAnonymously -Body $script:Body -To $To -SMTPServer $MailServer -From $From
     }

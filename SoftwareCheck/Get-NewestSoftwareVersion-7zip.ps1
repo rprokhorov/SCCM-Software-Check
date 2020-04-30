@@ -4,53 +4,53 @@ function Get-7zip ($URLPage){
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     $result = Invoke-WebRequest $URLPage -UseBasicParsing -Proxy $ProxyURL -ProxyUseDefaultCredentials
     ($result.Links | Where-Object {$_.outerHTML -match '7-zip [0-9\.]+' -and $_.outerHTML -notlike '*Alpha*' -and $_.outerHTML -notlike '*Beta*'}).outerHTML[0] -match '7-zip [0-9\.]+' | Out-Null
-    $global:Version = $Matches[0] -replace '7-zip '
-    $global:FileName_x64 = $global:FileName_x64 -replace '%version%', $global:version
-    $global:FileName_x86 = $global:FileName_x86 -replace '%version%', $global:version
+    $script:Version = $Matches[0] -replace '7-zip '
+    $script:FileName_x64 = $script:FileName_x64 -replace '%version%', $script:version
+    $script:FileName_x86 = $script:FileName_x86 -replace '%version%', $script:version
     $URLPage = 'https://www.7-zip.org/download.html'
     $result = Invoke-WebRequest $URLPage -UseBasicParsing -Proxy $ProxyURL -ProxyUseDefaultCredentials
     $DownloadURL_x64 = "https://www.7-zip.org/$(($result.Links | Where-Object {$_.href -like '*x64.msi'})[0].href)"
     $DownloadURL_x86 = "https://www.7-zip.org/$(($result.Links | Where-Object {$_.href -like '*.msi'})[0].href)"
     Write-Host "-===========-" -ForegroundColor Green
-    Write-Host "Product:  $global:Application"
+    Write-Host "Product:  $script:Application"
     Write-Host "Search link: $URLPage"
     Write-Host "Version: "$version
     Write-host "Download Link x86:    "$DownloadURL_x86
-    Write-Host "Download path: $DistribPath\$version\$global:FileName_x86"
+    Write-Host "Download path: $DistribPath\$version\$script:FileName_x86"
     Write-host "Download Link x64:    "$DownloadURL_x64
-    Write-Host "Download path: $DistribPath\$version\$global:FileName_x64"
+    Write-Host "Download path: $DistribPath\$version\$script:FileName_x64"
     
-    $global:body  = "Product:  $global:Application `rSearch link: $URLPage `rVersion: $version`rLink: $DownloadURL_x86 `rDownload path: $DistribPath\$version\$global:FileName_x86 `rLink: $DownloadURL_x64 `rDownload path: $DistribPath\$version\$global:FileName_x64 `r"
+    $script:body  = "Product:  $script:Application `rSearch link: $URLPage `rVersion: $version`rLink: $DownloadURL_x86 `rDownload path: $DistribPath\$version\$script:FileName_x86 `rLink: $DownloadURL_x64 `rDownload path: $DistribPath\$version\$script:FileName_x64 `r"
     if (Test-Path "filesystem::$DistribPath\$version\")
     {
         write-host "Версия уже есть"
-        $global:NewVersion = $false
+        $script:NewVersion = $false
     }
     Else
     {
-        $global:NewVersion = $true
+        $script:NewVersion = $true
         Write-Host "Начинаю закачивание новой версии"
         Set-Location C:
         #cd C:
         New-Item -ItemType Directory -Path "$DistribPath\$version"  -Force
         # Копирую шаблон PSADT
         Copy-Item $PSADTTemplatePath -Destination "$DistribPath\$version" -Recurse
-        Copy-Item -Path "$DistribPath\$version\SupportFiles\Config files\$global:templatename" -Destination "$DistribPath\$version\SupportFiles\Config.ps1" -Force
+        Copy-Item -Path "$DistribPath\$version\SupportFiles\Config files\$script:templatename" -Destination "$DistribPath\$version\SupportFiles\Config.ps1" -Force
         (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appVersion%', "$version") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
-        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%FileName_x86%', "$global:FileName_x86") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
-        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%FileName_x64%', "$global:FileName_x64") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
-        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%Publisher%', "$global:Publisher") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
-        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appName%', "$global:Application") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
-        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appDetectionVersion%', "$global:Version") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
-        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appDetectionName%', "$global:Application_detection") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%FileName_x86%', "$script:FileName_x86") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%FileName_x64%', "$script:FileName_x64") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%Publisher%', "$script:Publisher") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appName%', "$script:Application") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appDetectionVersion%', "$script:Version") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\Config.ps1").replace('%appDetectionName%', "$script:Application_detection") | Set-Content "$DistribPath\$version\SupportFiles\Config.ps1"
         
-        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appVersion%', "$global:Version") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
-        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appDetectionVersion%', "$global:Version") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
-        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appName%', "$global:Application") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
-        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appDetectionName%', "$global:Application_detection") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appVersion%', "$script:Version") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appDetectionVersion%', "$script:Version") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appName%', "$script:Application") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
+        (Get-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1").replace('%appDetectionName%', "$script:Application_detection") | Set-Content "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
         
-        $destination_x86 = "$DistribPath\$version\Files\$global:FileName_x86"
-        $destination_x64 = "$DistribPath\$version\Files\$global:FileName_x64"
+        $destination_x86 = "$DistribPath\$version\Files\$script:FileName_x86"
+        $destination_x64 = "$DistribPath\$version\Files\$script:FileName_x64"
         Invoke-WebRequest -Uri $DownloadURL_x86 -OutFile $destination_x86 -UseBasicParsing -Proxy $ProxyURL -ProxyUseDefaultCredentials -UserAgent [Microsoft.PowerShell.Commands.PSUserAgent]::FireFox
         Invoke-WebRequest -Uri $DownloadURL_x64 -OutFile $destination_x64 -UseBasicParsing -Proxy $ProxyURL -ProxyUseDefaultCredentials -UserAgent [Microsoft.PowerShell.Commands.PSUserAgent]::FireFox
     }
@@ -95,7 +95,7 @@ function New-Application {
     #endregion
 
     #Create Application
-    New-CMApplication -Name $ApplicationName -LocalizedApplicationName $global:Application -Description $Description -SoftwareVersion $Version -Publisher $Publisher -LocalizedDescription $LocalizedDescription -IconLocationFile $IconLocationFile
+    New-CMApplication -Name $ApplicationName -LocalizedApplicationName $script:Application -Description $Description -SoftwareVersion $Version -Publisher $Publisher -LocalizedDescription $LocalizedDescription -IconLocationFile $IconLocationFile
     Set-CMApplication -Name $ApplicationName -UserCategory $UserCategory -AutoInstall $true
     $DeploymentTypeProperties = @{
     InstallCommand = $InstallCommand
@@ -147,7 +147,7 @@ function New-Application {
     Set-Location $SaveLocation
 
     # Generate Mail Body
-    $global:Body += @"
+    $script:Body += @"
 Created application '$ApplicationName'.
 "@
 #Deployment assigned to '$TestCollection' starts on $DateTest.
@@ -165,7 +165,7 @@ function Send-EmailAnonymously {
         $SMTPServer = "SMTPServer.contoso.com",
         $From = "SCCMServer@contoso.com",
         [PARAMETER(Mandatory=$True)]$To,
-        $Subject = "Available new version $global:Application",
+        $Subject = "Available new version $script:Application",
         $Body
     )
     $PWord = ConvertTo-SecureString -String "anonymous" -AsPlainText -Force
@@ -176,20 +176,20 @@ function Send-EmailAnonymously {
 
 #region Variables
 $Config = Get-Content "$PSScriptRoot\config.json" | ConvertFrom-Json
-$global:Application = "7-zip"
-$global:Application_detection = '7-zip'
-$global:DirAppinConsole = "7-zip"
-$global:DistribPath = "$($Config.DistribPath)\7-zip"
-$global:FileName_x64 = '7-zip-%Version%_x64.msi'
-$global:FileName_x86 = '7-zip-%Version%_x86.msi'
+$script:Application = "7-zip"
+$script:Application_detection = '7-zip'
+$script:DirAppinConsole = "7-zip"
+$script:DistribPath = "$($Config.DistribPath)\7-zip"
+$script:FileName_x64 = '7-zip-%Version%_x64.msi'
+$script:FileName_x86 = '7-zip-%Version%_x86.msi'
 $URLPage = 'https://www.7-zip.org/'
-$global:Version = '1.1'
+$script:Version = '1.1'
 $ProxyURL = $Config.ProxyURL
-$global:body = ''
-$global:PSADTTemplatePath = "$($Config.ProxyURL)\*"
-$global:NewVersion = $null
-$global:Publisher = 'Igor Pavlov'
-$global:templatename = 'Config_7zip_template.ps1'
+$script:body = ''
+$script:PSADTTemplatePath = "$($Config.ProxyURL)\*"
+$script:NewVersion = $null
+$script:Publisher = 'Igor Pavlov'
+$script:templatename = 'Config_7zip_template.ps1'
 $To= $Config.To
 $From = $config.From
 $MailServer = $Config.MailServer
@@ -198,34 +198,34 @@ $LocalDistribPath = $Config.LocalDistribPath
 
 Try{
     Get-7zip -URLPage $URLPage
-    if ($global:NewVersion -eq $true)
+    if ($script:NewVersion -eq $true)
     {
         #New-Application
-        $global:ApplicationName = "$global:Application $global:version"
+        $script:ApplicationName = "$script:Application $script:version"
         $NewApplication_Properties = @{
-            ApplicationName = "$global:ApplicationName"
-            SourcesPath = "$global:DistribPath\$global:version"
+            ApplicationName = "$script:ApplicationName"
+            SourcesPath = "$script:DistribPath\$script:version"
             ProviderMachineName = ProviderMachineName = $Config.ProviderMachineName
             SiteCode = SiteCode = $Config.SiteCode
-            Application = $global:Application
-            DirAppinConsole = $global:DirAppinConsole
-            Description = "$global:Application application version: $($global:version) `rCreated by Script"
-            Version = $global:Version
-            Publisher = $global:Publisher
+            Application = $script:Application
+            DirAppinConsole = $script:DirAppinConsole
+            Description = "$script:Application application version: $($script:version) `rCreated by Script"
+            Version = $script:Version
+            Publisher = $script:Publisher
             InstallCommand = "Deploy-Application.exe"
             DPGroup = 'Distribution Point Group'
             TestCollection = "DA | $Application | Pilot | Required"
             ProdCollection = "DA | $Application | Prod | Required"
             TestUserCollection = "ALL | TEST | Application Catalog | Standard user"
-            MSIFileName = '$global:FileName'
+            MSIFileName = '$script:FileName'
             UninstallCommand = """Deploy-Application.exe"" -DeploymentType Uninstall"
             LocalizedDescription = "7-Zip — свободный файловый архиватор с высокой степенью сжатия данных. Поддерживает несколько алгоритмов сжатия и множество форматов данных, включая собственный формат 7z c высокоэффективным алгоритмом сжатия LZMA."
             IconLocationFile = "$DistribPath\icon.png"
             Scriptpath = "$DistribPath\$version\SupportFiles\DetectionMethod.ps1"
-            LocalScriptpath = "$LocalDistribPath\$version\SupportFiles\DetectionMethod.ps1"
+            LocalScriptpath = "$LocalDistribPath\$script:Application\$version\SupportFiles\DetectionMethod.ps1"
         }
         New-Application @NewApplication_Properties
-        Send-EmailAnonymously -Body $global:Body -To $To -SMTPServer $MailServer -From $From
+        Send-EmailAnonymously -Body $script:Body -To $To -SMTPServer $MailServer -From $From
     }
 }
 catch{}
