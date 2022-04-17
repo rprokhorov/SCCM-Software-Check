@@ -71,9 +71,9 @@
 | 65 |  <img src="https://github.com/rprokhorov/SCCM-Software-Check/blob/master/Applications/Putty/icon.png?raw=true" width="32">  |  PuTTY | Готово | Готово |
 | 66 |  <img src="https://github.com/rprokhorov/SCCM-Software-Check/blob/master/Applications/PyCharm/icon.png?raw=true" width="32">  |  PyCharm | В работе | В работе |
 | 67 |  <img src="https://github.com/rprokhorov/SCCM-Software-Check/blob/master/Applications/Python/icon.png?raw=true" width="32">  |  Python 3 | В работе | Готово |
-| 68 |  <img src="https://github.com/rprokhorov/SCCM-Software-Check/blob/master/Applications/RD%20Tabs/icon.png?raw=true" width="32">  |  RD Tabs | Готово | В работе |
-| 69 |  <img src="https://github.com/rprokhorov/SCCM-Software-Check/blob/master/Applications/Remote%20Desktop%20Connection%20Manager/icon.png?raw=true" width="32">  |  Remote Desktop Connection Manager | Готово | Готово |
-| 70 |  <img src="https://github.com/rprokhorov/SCCM-Software-Check/blob/master/Applications/Microsoft/RSAT/icon.png?raw=true" width="32">  |  RSAT | Не нужно* | В работе |
+| 68 |  <img src="https://github.com/rprokhorov/SCCM-Software-Check/blob/master/Applications/Remote%20Desktop%20Connection%20Manager/icon.png?raw=true" width="32">  |  Remote Desktop Connection Manager (RDCMan) | Готово | Готово |
+| 69 |  <img src="https://github.com/rprokhorov/SCCM-Software-Check/blob/master/Applications/Remote%20Server%20Administration%20Tools/icon.png?raw=true" width="32">  |  Remote Server Administration Tools (RSAT) | Не нужно* | В работе |
+| 70 |  <img src="https://github.com/rprokhorov/SCCM-Software-Check/blob/master/Applications/RD%20Tabs/icon.png?raw=true" width="32">  |  RD Tabs | Готово | В работе |
 | 71 |  <img src="https://github.com/rprokhorov/SCCM-Software-Check/blob/master/Applications/SAS%20Enterprise%20Guide/icon.png?raw=true" width="32">  |  SAS Enterprise Guide | Не нужно* | В работе |
 | 72 |  <img src="https://github.com/rprokhorov/SCCM-Software-Check/blob/master/Applications/SBIS%20Plugin/icon.png?raw=true" width="32">  |  SBIS Plugin | Не нужно* | В работе |
 | 73 |  <img src="https://github.com/rprokhorov/SCCM-Software-Check/blob/master/Applications/SCCM%20Client/icon.png?raw=true" width="32">  |  SCCM Console | Не нужно* | Готово |
