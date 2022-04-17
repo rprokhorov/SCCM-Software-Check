@@ -23,7 +23,7 @@
 | 17 |  <img src="https://github.com/rprokhorov/SCCM-Software-Check/blob/master/Applications/DataGrip/icon.png?raw=true" width="32">  |  DataGrip | В работе | В работе |
 | 18 |  <img src="https://github.com/rprokhorov/SCCM-Software-Check/blob/master/Applications/DaVinci%20Resolve/icon.png?raw=true" width="32">  |  DaVinchi Resolve | В работе | В работе |
 | 19 |  <img src="https://github.com/rprokhorov/SCCM-Software-Check/blob/master/Applications/Dropbox/icon.png?raw=true" width="32">  |  Dropbox | В работе | В работе |
-| 20 |  <img src="https://github.com/rprokhorov/SCCM-Software-Check/blob/master/Applications/Autodesk/DWG%20True%20Viewer/icon.png?raw=true" width="32">  |  DWG TrueView | В работе | В работе |
+| 20 |  <img src="https://github.com/rprokhorov/SCCM-Software-Check/blob/master/Applications/Autodesk%20DWG%20True%20Viewer/icon.png?raw=true" width="32">  |  DWG TrueView | В работе | В работе |
 | 21 |  <img src="https://github.com/rprokhorov/SCCM-Software-Check/blob/master/Applications/Far%20Manager/icon.png?raw=true" width="32">  |  Far Manager | Готово | Готово |
 | 22 |  <img src="https://github.com/rprokhorov/SCCM-Software-Check/blob/master/Applications/Fiddler/icon.png?raw=true" width="32">  |  Fiddler | Готово | Готово |
 | 23 |  <img src="https://github.com/rprokhorov/SCCM-Software-Check/blob/master/Applications/FileZilla/icon.png?raw=true" width="32">  |  FileZilla Client | Готово | Готово |
