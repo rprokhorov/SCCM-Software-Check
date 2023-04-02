@@ -1,0 +1,14 @@
+{
+  "TimeStamp": "2022-06-22 04:00:27",
+  "Product": "Postman",
+  "Version": "9.21.4",
+  "Searchlink": "https://www.postman.com/downloads/",
+  "Download_link_x86": "https://dl.pstmn.io/download/latest/win32",
+  "Download_link_x64": "https://dl.pstmn.io/download/latest/win64",
+  "icon": "https://raw.githubusercontent.com/rprokhorov/SCCM-Software-Check/master/Applications/Postman/icon.png",
+  "LocalizedDescription": {
+    "ru": "Postman — это платформа API для создания и использования API. Postman упрощает каждый этап жизненного цикла API и оптимизирует совместную работу, чтобы вы могли быстрее создавать более качественные API.",
+    "en": "Postman is an API platform for building and using APIs. Postman simplifies each step of the API lifecycle and streamlines collaboration so you can create better APIs—faster."
+  },
+  "Publisher": "Simon Tatharm"
+}

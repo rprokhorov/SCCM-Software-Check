@@ -1,0 +1,14 @@
+{
+  "TimeStamp": "2022-06-09 06:00:42",
+  "Product": "SQL Server Management Studio",
+  "Version": "18.12",
+  "Searchlink": "https://docs.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-2017",
+  "Download_link_x86": "https://aka.ms/ssmsfullsetup",
+  "Download_link_x64": "https://aka.ms/ssmsfullsetup",
+  "icon": "https://raw.githubusercontent.com/rprokhorov/SCCM-Software-Check/master/Applications/SQL%20Management%20Studio/icon.png",
+  "LocalizedDescription": {
+    "ru": "SQL Server Management Studio - Интегрированная среда для управления SQL. SSMS предоставляет средства для настройки, наблюдения и администрирования экземпляров SQL. С помощью SSMS можно развертывать, отслеживать и обновлять компоненты уровня данных, используемые вашими приложениями, а также создавать запросы и скрипты.",
+    "en": "SQL Server Management Studio - "
+  },
+  "Publisher": "Microsoft"
+}

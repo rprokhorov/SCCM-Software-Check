@@ -1,0 +1,14 @@
+{
+  "TimeStamp": "2022-07-21 01:13:23",
+  "Product": "Git",
+  "Version": "2.37.1",
+  "Searchlink": "https://git-scm.com/download/win",
+  "Download_link_x86": "https://github.com/git-for-windows/git/releases/download/v2.37.1.windows.1/Git-2.37.1-32-bit.exe",
+  "Download_link_x64": "https://github.com/git-for-windows/git/releases/download/v2.37.1.windows.1/Git-2.37.1-64-bit.exe",
+  "icon": "https://raw.githubusercontent.com/rprokhorov/SCCM-Software-Check/master/Applications/git/icon.png",
+  "LocalizedDescription": {
+    "ru": "Git — система управления версиями.",
+    "en": "Git - "
+  },
+  "Publisher": "The Git Development Community"
+}

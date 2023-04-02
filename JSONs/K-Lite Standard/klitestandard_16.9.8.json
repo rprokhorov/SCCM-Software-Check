@@ -1,0 +1,14 @@
+{
+  "TimeStamp": "2022-04-16 12:00:18",
+  "Product": "K-Lite Codec Pack Standard",
+  "Version": "16.9.8",
+  "Searchlink": "http://www.codecguide.com/download_k-lite_codec_pack_standard.htm",
+  "Download_link_x86": "https://files3.codecguide.com/K-Lite_Codec_Pack_1698_Standard.exe",
+  "Download_link_x64": "https://files3.codecguide.com/K-Lite_Codec_Pack_1698_Standard.exe",
+  "icon": "https://raw.githubusercontent.com/rprokhorov/SCCM-Software-Check/master/Applications/K-Lite%20Codec%20Pack%20Standard/icon.png",
+  "LocalizedDescription": {
+    "en": "K-Lite Codec Pack Standard - ",
+    "ru": "K-Lite Codec Pack Standard — универсальный набор кодеков и утилит для просмотра и обработки аудио- и видеофайлов. В пакет входит большое число свободных, либо бесплатных кодеков и утилит."
+  },
+  "Publisher": "KLCP"
+}

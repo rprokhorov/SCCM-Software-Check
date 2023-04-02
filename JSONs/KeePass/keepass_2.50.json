@@ -1,0 +1,14 @@
+{
+  "TimeStamp": "2022-03-28 10:12:20",
+  "Product": "KeePass",
+  "Version": "2.50",
+  "Searchlink": "https://keepass.info/download.html",
+  "Download_link_x86": "https://sourceforge.net/projects/keepass/files/KeePass%202.x/2.50/KeePass-2.50.msi/download",
+  "Download_link_x64": "https://sourceforge.net/projects/keepass/files/KeePass%202.x/2.50/KeePass-2.50.msi/download",
+  "icon": "https://raw.githubusercontent.com/rprokhorov/SCCM-Software-Check/master/Applications/KeePass/icon.png",
+  "LocalizedDescription": {
+    "en": "KeePass - the free, open source, light-weight and easy-to-use password manager.",
+    "ru": "KeePass Password Safe — кроссплатформенная свободная программа для хранения паролей, распространяемая по лицензии GPL. Программа разработана Домиником Райхлом, изначально только для операционной системы Windows."
+  },
+  "Publisher": "Dominik Reichl"
+}

@@ -1,0 +1,14 @@
+{
+  "TimeStamp": "2022-07-07 08:00:27",
+  "Product": "Visual Studio Code",
+  "Version": "1.69",
+  "Searchlink": "https://code.visualstudio.com/updates",
+  "Download_link_x86": "https://vscode-update.azurewebsites.net/latest/win32/stable",
+  "Download_link_x64": "https://vscode-update.azurewebsites.net/latest/win32-x64/stable",
+  "icon": "https://raw.githubusercontent.com/rprokhorov/SCCM-Software-Check/master/Applications/Visual%20Studio%20Code/icon.png",
+  "LocalizedDescription": {
+    "ru": "Visual Studio Code - Редактор кода. Включает в себя отладчик, инструменты для работы с Git, подсветку синтаксиса, IntelliSense и средства для рефакторинга. Имеет широкие возможности для кастомизации: пользовательские темы, сочетания клавиш и файлы конфигурации.",
+    "en": "Visual Studio Code - "
+  },
+  "Publisher": "Microsoft"
+}
