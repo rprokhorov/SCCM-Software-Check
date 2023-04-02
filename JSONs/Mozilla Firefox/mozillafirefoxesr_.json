@@ -1,0 +1,14 @@
+{
+  "TimeStamp": "2022-04-25 10:01:50",
+  "Product": "Mozilla Firefox ESR",
+  "Version": null,
+  "Searchlink": "https://www.mozilla.org/en-US/firefox/organizations/notes/",
+  "Download_link_x86": null,
+  "Download_link_x64": null,
+  "icon": "https://raw.githubusercontent.com/rprokhorov/SCCM-Software-Check/master/Applications/Mozilla%20Firefox%20ESR/icon.png",
+  "LocalizedDescription": {
+    "en": "Mozilla Firefox ESR - ",
+    "ru": "Mozilla Firefox ESR- альтернативный браузер для использования в корпоративной среде."
+  },
+  "Publisher": "Mozilla"
+}

@@ -1,0 +1,14 @@
+{
+  "TimeStamp": "2022-05-12 04:00:19",
+  "Product": "AxurePR",
+  "Version": "8.1.0.3400",
+  "Searchlink": "https://www.axure.com/release-history/rp8",
+  "Download_link_x86": "https://axure.cachefly.net/versions/8-0/AxureRP-Setup-3399.exe",
+  "Download_link_x64": "https://axure.cachefly.net/versions/8-0/AxureRP-Setup-3399.exe",
+  "icon": "https://raw.githubusercontent.com/rprokhorov/SCCM-Software-Check/master/Applications/Axure%20RP/icon.png",
+  "LocalizedDescription": {
+    "en": "Axure RP — ",
+    "ru": "Axure RP — программное обеспечение для создания прототипов и спецификаций веб-сайтов и приложений"
+  },
+  "Publisher": "Axure Software Solutions, Inc."
+}

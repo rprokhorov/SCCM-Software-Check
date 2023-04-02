@@ -1,0 +1,14 @@
+{
+  "TimeStamp": "2022-03-28 10:12:30",
+  "Product": "Nmap",
+  "Version": "7.92",
+  "Searchlink": "https://nmap.org/download.html#windows",
+  "Download_link_x86": "https://nmap.org/dist/nmap-7.92-setup.exe",
+  "Download_link_x64": "https://nmap.org/dist/nmap-7.92-setup.exe",
+  "icon": "https://raw.githubusercontent.com/rprokhorov/SCCM-Software-Check/master/Applications/Nmap/icon.png",
+  "LocalizedDescription": {
+    "en": "Nmap - ",
+    "ru": "Nmap - свободная утилита, предназначенная для разнообразного настраиваемого сканирования IP-сетей с любым количеством объектов, определения состояния объектов сканируемой сети (портов и соответствующих им служб)."
+  },
+  "Publisher": "Nmap Project"
+}

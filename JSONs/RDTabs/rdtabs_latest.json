@@ -1,0 +1,14 @@
+{
+  "TimeStamp": "2022-03-28 10:12:46",
+  "Product": "RD Tabs",
+  "Version": "3.0.12.657",
+  "Searchlink": "https://www.avianwaves.com/Software/Tools/RD-Tabs",
+  "Download_link_x86": "/Software/Tools/RDTabs/RDTabsSetup_3.0.12.exe",
+  "Download_link_x64": "/Software/Tools/RDTabs/RDTabsSetup_3.0.12.exe",
+  "icon": "https://raw.githubusercontent.com/rprokhorov/SCCM-Software-Check/master/Applications/RD%20Tabs/icon.png",
+  "LocalizedDescription": {
+    "en": "RD Tabs is the original advanced multi-tabbed Windows Remote Desktop client and connection manager. It started back in 2006 with a simple idea: bring the then new idea of tabbed web browsers to remote desktop. From there, a way to remember saved session properties that was superior to a bunch of .rdp files was added (favorites), including the ability to batch edit multiple favorites at a time, making management of stored passwords simple. But why stop there? Features allowing split-screen, multiple Windows, scaled desktop sizes were added. Now in present day more advanced features are coming fast. From an integrated PowerShell scripting engine, to colored tabs for organization, RD Tabs makes a System Administrator’s life so much easier.",
+    "ru": "RD Tabs — это оригинальный расширенный клиент удаленного рабочего стола Windows с несколькими вкладками и диспетчер подключений. Это началось еще в 2006 году с простой идеи: перенести новую идею веб-браузеров с вкладками на удаленный рабочий стол. Оттуда был добавлен способ запоминания сохраненных свойств сеанса, который превосходил набор файлов .rdp (избранное), включая возможность пакетного редактирования нескольких избранных одновременно, что упростило управление сохраненными паролями. Но зачем останавливаться на достигнутом? Были добавлены функции, позволяющие разделить экран, несколько окон, масштабировать размеры рабочего стола. Теперь в наши дни более продвинутые функции появляются быстро. От встроенного механизма сценариев PowerShell до цветных вкладок для организации — вкладки RD значительно упрощают жизнь системного администратора."
+  },
+  "Publisher": "Avian Waves LLC"
+}

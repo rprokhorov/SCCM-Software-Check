@@ -1,0 +1,14 @@
+{
+  "TimeStamp": "2022-05-20 02:00:23",
+  "Product": "Mozilla Firefox ESR",
+  "Version": "91.9.1",
+  "Searchlink": "https://www.mozilla.org/en-US/firefox/organizations/notes/",
+  "Download_link_x86": "https://download.mozilla.org/?product=firefox-esr-latest-ssl&amp;os=win&amp;lang=en-US",
+  "Download_link_x64": "https://download.mozilla.org/?product=firefox-esr-latest-ssl&amp;os=win64&amp;lang=en-US",
+  "icon": "https://raw.githubusercontent.com/rprokhorov/SCCM-Software-Check/master/Applications/Mozilla%20Firefox%20ESR/icon.png",
+  "LocalizedDescription": {
+    "ru": "Mozilla Firefox ESR- альтернативный браузер для использования в корпоративной среде.",
+    "en": "Mozilla Firefox ESR - "
+  },
+  "Publisher": "Mozilla"
+}

@@ -1,0 +1,14 @@
+{
+  "TimeStamp": "2022-03-28 10:12:55",
+  "Product": "VLC",
+  "Version": "3.0.16",
+  "Searchlink": "https://www.videolan.org/vlc/",
+  "Download_link_x86": "https://download.videolan.org/vlc/last/win32/vlc-3.0.16-win32.msi",
+  "Download_link_x64": "https://download.videolan.org/vlc/last/win64/vlc-3.0.16-win64.msi",
+  "icon": "https://raw.githubusercontent.com/rprokhorov/SCCM-Software-Check/master/Applications/VLC/icon.png",
+  "LocalizedDescription": {
+    "en": "VLC - ",
+    "ru": "VLC — бесплатный и свободный кросс-платформенный медиаплеер и медиаплатформа с открытым исходным кодом. VLC воспроизводит множество мультимедийных файлов, а также DVD, Audio CD, VCD и сетевые трансляции."
+  },
+  "Publisher": "Simon Tatharm"
+}

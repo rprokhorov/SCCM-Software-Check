@@ -1,0 +1,14 @@
+{
+  "TimeStamp": "2022-07-24 02:00:13",
+  "Product": "Far Manager",
+  "Version": "3.0.6000",
+  "Searchlink": "https://www.farmanager.com/download.php?l=ru",
+  "Download_link_x86": "https://www.farmanager.com/files/Far30b6000.x86.20220723.msi",
+  "Download_link_x64": "https://www.farmanager.com/files/Far30b6000.x64.20220723.msi",
+  "icon": "https://raw.githubusercontent.com/rprokhorov/SCCM-Software-Check/master/Applications/Far%20Manager/icon.png",
+  "LocalizedDescription": {
+    "en": "FAR Manager — ",
+    "ru": "FAR Manager — консольный файловый менеджер для операционных систем семейства Microsoft Windows."
+  },
+  "Publisher": "Eugene Roshal & Far Group"
+}

@@ -1,0 +1,14 @@
+{
+  "TimeStamp": "2022-03-28 10:13:05",
+  "Product": "WinSCP",
+  "Version": "5.19.6",
+  "Searchlink": "https://winscp.net/eng/download.php",
+  "Download_link_x86": "https://cdn.winscp.net/files/WinSCP-5.19.6-Setup.exe?secure=nBAtsBzd2jHibWJ8tkCyiQ==,1648509185",
+  "Download_link_x64": "https://cdn.winscp.net/files/WinSCP-5.19.6-Setup.exe?secure=nBAtsBzd2jHibWJ8tkCyiQ==,1648509185",
+  "icon": "https://raw.githubusercontent.com/rprokhorov/SCCM-Software-Check/master/Applications/WinSCp/icon.png",
+  "LocalizedDescription": {
+    "en": "WinSCP - ",
+    "ru": "WinSCP — свободный графический клиент протоколов SFTP и SCP, предназначенный для Windows. Распространяется по лицензии GNU GPL. Обеспечивает защищённое копирование файлов между компьютером и серверами, поддерживающими эти протоколы."
+  },
+  "Publisher": "Martin Prikryl"
+}

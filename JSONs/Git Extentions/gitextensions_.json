@@ -1,0 +1,14 @@
+{
+  "TimeStamp": "2022-05-18 08:00:21",
+  "Product": "Git Extensions",
+  "Version": null,
+  "Searchlink": "https://github.com/gitextensions/gitextensions/releases/latest",
+  "Download_link_x86": "https://github.com",
+  "Download_link_x64": "https://github.com",
+  "icon": "https://raw.githubusercontent.com/rprokhorov/SCCM-Software-Check/master/Applications/Git%20Extensions/icon.png",
+  "LocalizedDescription": {
+    "en": "Git Extensions - ",
+    "ru": "Git Extensions - визуальный клиент системы управления версиями Git, позволяющий использовать Git без использования консольного интерфейса."
+  },
+  "Publisher": "Git Extensions Team"
+}

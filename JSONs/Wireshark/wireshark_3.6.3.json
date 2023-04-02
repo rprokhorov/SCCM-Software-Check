@@ -1,0 +1,14 @@
+{
+  "TimeStamp": "2022-03-28 10:13:10",
+  "Product": "Wireshark",
+  "Version": "3.6.3",
+  "Searchlink": "https://www.wireshark.org/#download",
+  "Download_link_x86": "https://1.na.dl.wireshark.org/win32/Wireshark-win32-3.6.3.exe",
+  "Download_link_x64": "https://1.na.dl.wireshark.org/win64/Wireshark-win64-3.6.3.exe",
+  "icon": "https://raw.githubusercontent.com/rprokhorov/SCCM-Software-Check/master/Applications/Wireshark/icon.png",
+  "LocalizedDescription": {
+    "en": "Wireshark - ",
+    "ru": "Wireshark — программа-анализатор трафика для компьютерных сетей Ethernet и некоторых других. Имеет графический пользовательский интерфейс."
+  },
+  "Publisher": "Wireshark"
+}

@@ -1,0 +1,14 @@
+{
+  "TimeStamp": "2022-03-28 10:12:43",
+  "Product": "RDCMan",
+  "Version": "2.90",
+  "Searchlink": "https://docs.microsoft.com/en-us/sysinternals/downloads/rdcman",
+  "Download_link_x86": "https://download.sysinternals.com/files/RDCMan.zip",
+  "Download_link_x64": "https://download.sysinternals.com/files/RDCMan.zip",
+  "icon": "https://raw.githubusercontent.com/rprokhorov/SCCM-Software-Check/master/Applications/Microsoft/RDCMan/icon.png",
+  "LocalizedDescription": {
+    "en": "Remote Desktop Connection Manager (RDCMan) - RDCMan manages multiple remote desktop connections. It is useful for managing server labs where you need regular access to each machine such as automated checkin systems and data centers.",
+    "ru": "Remote Desktop Connection Manager (RDCMan) - RDCMan управляет несколькими подключениями к удаленному рабочему столу. Это полезно для управления серверными лабораториями, где вам нужен регулярный доступ к каждой машине, такой как автоматизированные системы регистрации и центры обработки данных."
+  },
+  "Publisher": "Microsoft"
+}
