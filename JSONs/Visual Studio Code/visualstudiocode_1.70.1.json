@@ -8,7 +8,7 @@
   "icon": "https://raw.githubusercontent.com/rprokhorov/SCCM-Software-Check/master/Applications/Visual%20Studio%20Code/icon.png",
   "LocalizedDescription": {
     "ru": "Visual Studio Code - Редактор кода. Включает в себя отладчик, инструменты для работы с Git, подсветку синтаксиса, IntelliSense и средства для рефакторинга. Имеет широкие возможности для кастомизации: пользовательские темы, сочетания клавиш и файлы конфигурации.",
-    "en": "Visual Studio Code - "
+    "en": "Visual Studio Code - editor redefined and optimized for building and debugging modern web and cloud applications"
   },
   "Publisher": "Microsoft"
 }
