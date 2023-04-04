@@ -118,45 +118,69 @@ This project is designed to easily manage applications in SCCM. The main goal of
 ## REST API
 If you do not want to run scripts for parsing sites on your site, but only want to receive data about applications, then I started making a REST service https://sccm-software-check.azurewebsites.net/api/application
 
+#### REST parameters
+| Parameter Name | Value | Description |
+|----------------|-------|-------------|
+| name | 7zip, AxurePR, FarManager, Fiddler, FileZilla, Git, GitExtensions, KLiteStandard, KeePass, MozillaFirefoxESR, mRemoteNG, Nmap, Notepadplusplus, Postman, PuTTY, RDCMan, RDTabs, SQLManagementStudio, TotalCommander, VLC, VisualStudioCode, WinRAR, WinSCP, Wireshark | Application name |
+| version | 1.2.4 (specific application version), check | Shows information about a specific version of the application. If check is selected - checks the live version |
+
 ### REST request examples
 - Request the latest version of the application
 
-https://sccm-software-check.azurewebsites.net/api/application?name=Postman
+https://sccm-software-check.azurewebsites.net/api/application?name=VisualStudioCode
 ``` json
 {
-  "TimeStamp": "2022-04-01 10:00:28",
-  "Product": "Postman",
-  "Version": "9.15.10",
-  "Searchlink": "https://www.postman.com/downloads/",
-  "Download_link_x86": "https://dl.pstmn.io/download/latest/win32",
-  "Download_link_x64": "https://dl.pstmn.io/download/latest/win64",
-  "icon": "https://raw.githubusercontent.com/rprokhorov/SCCM-Software-Check/master/Applications/Postman/icon.png",
+  "TimeStamp": "2022-08-21 01:59:23",
+  "Product": "Visual Studio Code",
+  "Version": "1.70.1",
+  "Searchlink": "https://code.visualstudio.com/updates",
+  "Download_link_x86": "https://vscode-update.azurewebsites.net/latest/win32/stable",
+  "Download_link_x64": "https://vscode-update.azurewebsites.net/latest/win32-x64/stable",
+  "icon": "https://raw.githubusercontent.com/rprokhorov/SCCM-Software-Check/master/Applications/Visual%20Studio%20Code/icon.png",
   "LocalizedDescription": {
-    "en": "Postman is an API platform for building and using APIs. Postman simplifies each step of the API lifecycle and streamlines collaboration so you can create better APIs—faster.",
-    "ru": "Postman — это платформа API для создания и использования API. Postman упрощает каждый этап жизненного цикла API и оптимизирует совместную работу, чтобы вы могли быстрее создавать более качественные API."
+    "ru": "Visual Studio Code - Редактор кода. Включает в себя отладчик, инструменты для работы с Git, подсветку синтаксиса, IntelliSense и средства для рефакторинга. Имеет широкие возможности для кастомизации: пользовательские темы, сочетания клавиш и файлы конфигурации.",
+    "en": "Visual Studio Code - editor redefined and optimized for building and debugging modern web and cloud applications"
   },
-  "Publisher": "Simon Tatharm"
+  "Publisher": "Microsoft"
 }
 ```
-
 - Requesting a specific application version
 
-https://sccm-software-check.azurewebsites.net/api/application?name=Postman&version=9.15.2
+https://sccm-software-check.azurewebsites.net/api/application?name=VisualStudioCode&version=1.69
 
 ``` json
 {
-  "TimeStamp": "2022-03-28 10:12:37",
-  "Product": "Postman",
-  "Version": "9.15.2",
-  "Searchlink": "https://www.postman.com/downloads/",
-  "Download_link_x86": "https://dl.pstmn.io/download/latest/win32",
-  "Download_link_x64": "https://dl.pstmn.io/download/latest/win64",
-  "icon": "https://raw.githubusercontent.com/rprokhorov/SCCM-Software-Check/master/Applications/Postman/icon.png",
+  "TimeStamp": "2022-07-07 08:00:27",
+  "Product": "Visual Studio Code",
+  "Version": "1.69",
+  "Searchlink": "https://code.visualstudio.com/updates",
+  "Download_link_x86": "https://vscode-update.azurewebsites.net/latest/win32/stable",
+  "Download_link_x64": "https://vscode-update.azurewebsites.net/latest/win32-x64/stable",
+  "icon": "https://raw.githubusercontent.com/rprokhorov/SCCM-Software-Check/master/Applications/Visual%20Studio%20Code/icon.png",
   "LocalizedDescription": {
-    "en": "Postman is an API platform for building and using APIs. Postman simplifies each step of the API lifecycle and streamlines collaboration so you can create better APIs—faster.",
-    "ru": "Postman — это платформа API для создания и использования API. Postman упрощает каждый этап жизненного цикла API и оптимизирует совместную работу, чтобы вы могли быстрее создавать более качественные API."
+    "ru": "Visual Studio Code - Редактор кода. Включает в себя отладчик, инструменты для работы с Git, подсветку синтаксиса, IntelliSense и средства для рефакторинга. Имеет широкие возможности для кастомизации: пользовательские темы, сочетания клавиш и файлы конфигурации.",
+    "en": "Visual Studio Code - editor redefined and optimized for building and debugging modern web and cloud applications"
   },
-  "Publisher": "Simon Tatharm"
+  "Publisher": "Microsoft"
+}
+```
+- Requesting latest version from website
+
+https://sccm-software-check.azurewebsites.net/api/application?name=VisualStudioCode&version=check
+```json
+{
+  "TimeStamp": "2023-04-04 10:08:18",
+  "Product": "Visual Studio Code",
+  "Version": "1.77",
+  "Searchlink": "https://code.visualstudio.com/updates",
+  "Download_link_x86": "https://vscode-update.azurewebsites.net/latest/win32/stable",
+  "Download_link_x64": "https://vscode-update.azurewebsites.net/latest/win32-x64/stable",
+  "icon": "https://raw.githubusercontent.com/rprokhorov/SCCM-Software-Check/master/Applications/Visual%20Studio%20Code/icon.png",
+  "LocalizedDescription": {
+    "ru": "Visual Studio Code - Редактор кода. Включает в себя отладчик, инструменты для работы с Git, подсветку синтаксиса, IntelliSense и средства для рефакторинга. Имеет широкие возможности для кастомизации: пользовательские темы, сочетания клавиш и файлы конфигурации.",
+    "en": "Visual Studio Code - editor redefined and optimized for building and debugging modern web and cloud applications"
+  },
+  "Publisher": "Microsoft"
 }
 ```
 
