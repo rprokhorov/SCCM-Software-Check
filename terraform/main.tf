@@ -103,7 +103,7 @@ resource "azurerm_function_app_function" "example" {
 
   file {
     name    = "run.ps1"
-    content = file("../azure_functions/http_trigger_run.ps1")
+    content = file("${path.module}/../azure_functions/http_trigger_run.ps1")
   }
 
   test_data = jsonencode({
