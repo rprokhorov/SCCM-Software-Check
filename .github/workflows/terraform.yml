@@ -47,15 +47,14 @@ name: 'Terraform'
 on:
   push:
     branches:
-    - main
+    - master
     #paths: 
     #- terraform/**
   pull_request:
-    #branches:
-    #- master
+    branches:
+    - master
     #paths: 
     #- terraform/**
-
 
 #on:
 #  push:
