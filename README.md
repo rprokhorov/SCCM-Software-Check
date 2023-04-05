@@ -1,5 +1,6 @@
 This project is designed to easily manage applications in SCCM. The main goal of this project is to get a flexible installation configuration for your company. Because in real life a silent install is more complicated than "/qn".
 
+
 ## List of products and their readiness
 
 | №   | Icon   |   Product Name  |  Web parser | Config file (Install/Uninstall) |
