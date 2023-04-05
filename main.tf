@@ -1,3 +1,13 @@
+terraform {
+  cloud {
+    organization = "rprokhorov"
+
+    workspaces {
+      name = "SCCM-Software-Check"
+    }
+  }
+}
+
 locals {
   container_name = {
     "7zip"                = "7-zip"
