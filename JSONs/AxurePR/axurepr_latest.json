@@ -7,7 +7,7 @@
   "Download_link_x64": "https://axure.cachefly.net/versions/8-0/AxureRP-Setup-3399.exe",
   "icon": "https://raw.githubusercontent.com/rprokhorov/SCCM-Software-Check/master/Applications/Axure%20RP/icon.png",
   "LocalizedDescription": {
-    "en": "Axure RP — ",
+    "en": "Axure RP — prototyping and specification software for websites and applications",
     "ru": "Axure RP — программное обеспечение для создания прототипов и спецификаций веб-сайтов и приложений"
   },
   "Publisher": "Axure Software Solutions, Inc."

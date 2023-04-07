@@ -7,7 +7,7 @@
   "Download_link_x64": "https://the.earth.li/~sgtatham/putty/latest/w64/putty-64bit-0.76-installer.msi",
   "icon": "https://raw.githubusercontent.com/rprokhorov/SCCM-Software-Check/master/Applications/Putty/icon.png",
   "LocalizedDescription": {
-    "en": "PuTTY - ",
+    "en": "PuTTY - open source SSH and telnet client, developed originally by Simon Tatham for the Windows platform.",
     "ru": "PuTTY — свободно распространяемый клиент для различных протоколов удалённого доступа, включая SSH, Telnet, rlogin"
   },
   "Publisher": "Simon Tatharm"

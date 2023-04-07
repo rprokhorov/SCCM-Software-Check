@@ -7,7 +7,7 @@
   "Download_link_x64": "https://www.7-zip.org/a/7z2107-x64.msi",
   "icon": "https://raw.githubusercontent.com/rprokhorov/SCCM-Software-Check/master/Applications/7-zip/icon.png",
   "LocalizedDescription": {
-    "en": "7-zip - the free archive manager",
+    "en": "7-zip - free file archiver with a high degree of data compression. Supports multiple compression algorithms and multiple data formats, including native 7z format with highly efficient LZMA compression algorithm",
     "ru": "7-Zip — свободный файловый архиватор с высокой степенью сжатия данных. Поддерживает несколько алгоритмов сжатия и множество форматов данных, включая собственный формат 7z c высокоэффективным алгоритмом сжатия LZMA."
   },
   "Publisher": "Igor Pavlov"

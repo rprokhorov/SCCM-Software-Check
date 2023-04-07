@@ -7,8 +7,8 @@
   "Download_link_x64": "https://download.mozilla.org/?product=firefox-esr-latest-ssl&amp;os=win64&amp;lang=en-US",
   "icon": "https://raw.githubusercontent.com/rprokhorov/SCCM-Software-Check/master/Applications/Mozilla%20Firefox%20ESR/icon.png",
   "LocalizedDescription": {
-    "en": "Mozilla Firefox ESR - ",
-    "ru": "Mozilla Firefox ESR- альтернативный браузер для использования в корпоративной среде."
+    "en": "Mozilla Firefox ESR - official version of Firefox developed for large organizations like universities and businesses that need to set up and maintain Firefox on a large scale. Firefox ESR does not come with the latest features but it has the latest security and stability fixes.",
+    "ru": "Mozilla Firefox ESR - альтернативный браузер для использования в корпоративной среде."
   },
   "Publisher": "Mozilla"
 }

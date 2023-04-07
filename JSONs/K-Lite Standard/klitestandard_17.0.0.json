@@ -8,7 +8,7 @@
   "icon": "https://raw.githubusercontent.com/rprokhorov/SCCM-Software-Check/master/Applications/K-Lite%20Codec%20Pack%20Standard/icon.png",
   "LocalizedDescription": {
     "ru": "K-Lite Codec Pack Standard — универсальный набор кодеков и утилит для просмотра и обработки аудио- и видеофайлов. В пакет входит большое число свободных, либо бесплатных кодеков и утилит.",
-    "en": "K-Lite Codec Pack Standard - "
+    "en": "K-Lite Codec Pack Standard - free software bundle for playing all your audio and video files. It supports all common file formats, such as AVI, MP4, MKV, and FLV"
   },
   "Publisher": "KLCP"
 }

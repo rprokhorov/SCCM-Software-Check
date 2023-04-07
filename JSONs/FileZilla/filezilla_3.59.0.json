@@ -8,7 +8,7 @@
   "icon": "https://raw.githubusercontent.com/rprokhorov/SCCM-Software-Check/master/Applications/FileZilla/icon.png",
   "LocalizedDescription": {
     "ru": "FileZilla — свободный многоязычный FTP-клиент с открытым исходным кодом для Microsoft Windows, Mac OS X и Linux. Он поддерживает FTP, SFTP, и FTPS (FTP через SSL/TLS) и имеет настраиваемый интерфейс с поддержкой смены тем оформления. Оснащён возможностью перетаскивания объектов, синхронизацией каталогов и поиском на удалённом сервере. Поддерживает многопоточную загрузку файлов, а также докачку при обрыве (если поддерживается сервером) интернет-соединения",
-    "en": "FileZilla - "
+    "en": "FileZilla - free and open source multilingual FTP client for Windows, macOS and Linux. It supports FTP, SFTP, and FTPS and has a highly customizable interface with theme changer support. Equipped with the ability to drag and drop objects, directory synchronization and search on a remote server."
   },
   "Publisher": "Tim Kosse"
 }

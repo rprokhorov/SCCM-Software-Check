@@ -7,7 +7,7 @@
   "Download_link_x64": "https://github.com/mRemoteNG/mRemoteNG/releases/download/v1.76.20/mRemoteNG-Installer-1.76.20.24615.msi",
   "icon": "https://raw.githubusercontent.com/rprokhorov/SCCM-Software-Check/master/Applications/mRemoteNG/icon.png",
   "LocalizedDescription": {
-    "en": "mRemoteNG - ",
+    "en": "mRemoteNG - fork of mRemote: an open source, tabbed, multi-protocol, remote connections manager for Windows. mRemoteNG adds bug fixes and new features to mRemote and allows you to view all of your remote connections in a simple yet powerful tabbed interface.",
     "ru": "mRemoteNG - это менеджер удаленных подключений с \"вкладочным\" интерфейсом, который позволяет одновременно работать с несколькими сессиями. Программа поддерживает протоколы VNC, SSH, RDP, ICA, Telnet, HTTP/HTTPS и RLOGIN. В зависимости от используемого протокола, mRemoteNG может работать в разных режимах. Например, SSH используется для передачи данных на удаленный компьютер, а VNC - для трансляции рабочего стола. Некоторые протоколы позволяют осуществлять удаленную проверку портов."
   },
   "Publisher": "Next Generation Software"
