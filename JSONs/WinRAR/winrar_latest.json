@@ -8,7 +8,7 @@
   "icon": "https://raw.githubusercontent.com/rprokhorov/SCCM-Software-Check/master/Applications/WinRAR/icon.png",
   "LocalizedDescription": {
     "ru": "WinRAR — архиватор файлов для 32- и 64-разрядных операционных систем Windows, позволяющий создавать/изменять/распаковывать архивы RAR и ZIP и распаковывать архивы множества других форматов",
-    "en": "WinRAR - "
+    "en": "WinRAR - powerful archiver extractor tool, and can open all popular file formats. RAR and WinRAR"
   },
   "Publisher": "win.rar GmbH"
 }

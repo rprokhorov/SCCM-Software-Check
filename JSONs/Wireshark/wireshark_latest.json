@@ -7,8 +7,8 @@
   "Download_link_x64": "https://1.na.dl.wireshark.org/win64/Wireshark-win64-3.6.7.exe",
   "icon": "https://raw.githubusercontent.com/rprokhorov/SCCM-Software-Check/master/Applications/Wireshark/icon.png",
   "LocalizedDescription": {
-    "ru": "Wireshark — программа-анализатор трафика для компьютерных сетей Ethernet и некоторых других. Имеет графический пользовательский интерфейс.",
-    "en": "Wireshark - "
+    "en": "Wireshark - free and open-source packet analyzer. It is used for network troubleshooting, analysis, software and communications protocol development, and education.",
+    "ru": "Wireshark — программа-анализатор трафика для компьютерных сетей Ethernet и некоторых других. Имеет графический пользовательский интерфейс."
   },
   "Publisher": "Wireshark"
 }

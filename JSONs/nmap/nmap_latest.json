@@ -7,7 +7,7 @@
   "Download_link_x64": "https://nmap.org/dist/nmap-7.92-setup.exe",
   "icon": "https://raw.githubusercontent.com/rprokhorov/SCCM-Software-Check/master/Applications/Nmap/icon.png",
   "LocalizedDescription": {
-    "en": "Nmap - ",
+    "en": "Nmap - free and open source utility for network discovery and security auditing. Many systems and network administrators also find it useful for tasks such as network inventory, managing service upgrade schedules, and monitoring host or service uptime.",
     "ru": "Nmap - свободная утилита, предназначенная для разнообразного настраиваемого сканирования IP-сетей с любым количеством объектов, определения состояния объектов сканируемой сети (портов и соответствующих им служб)."
   },
   "Publisher": "Nmap Project"

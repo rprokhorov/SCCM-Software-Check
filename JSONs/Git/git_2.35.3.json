@@ -7,8 +7,8 @@
   "Download_link_x64": "https://github.com/git-for-windows/git/releases/download/v2.35.2.windows.1/Git-2.35.2-64-bit.exe",
   "icon": "https://raw.githubusercontent.com/rprokhorov/SCCM-Software-Check/master/Applications/git/icon.png",
   "LocalizedDescription": {
-    "en": "Git - ",
-    "ru": "Git — система управления версиями."
+    "en": "Git - free and open source distributed version control system designed to handle everything from small to very large projects with speed and efficiency.",
+    "ru": "Git — распределённая система управления версиями"
   },
   "Publisher": "The Git Development Community"
 }

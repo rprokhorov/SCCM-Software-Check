@@ -7,7 +7,7 @@
   "Download_link_x64": "https://download.videolan.org/vlc/last/win64/vlc-3.0.17.4-win64.msi",
   "icon": "https://raw.githubusercontent.com/rprokhorov/SCCM-Software-Check/master/Applications/VLC/icon.png",
   "LocalizedDescription": {
-    "en": "VLC - ",
+    "en": "VLC - free and open source cross-platform multimedia player and framework that plays most multimedia files, and various streaming protocols",
     "ru": "VLC — бесплатный и свободный кросс-платформенный медиаплеер и медиаплатформа с открытым исходным кодом. VLC воспроизводит множество мультимедийных файлов, а также DVD, Audio CD, VCD и сетевые трансляции."
   },
   "Publisher": "Simon Tatharm"

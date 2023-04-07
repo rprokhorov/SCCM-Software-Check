@@ -7,8 +7,8 @@
   "Download_link_x64": "https://aka.ms/ssmsfullsetup",
   "icon": "https://raw.githubusercontent.com/rprokhorov/SCCM-Software-Check/master/Applications/SQL%20Management%20Studio/icon.png",
   "LocalizedDescription": {
-    "ru": "SQL Server Management Studio - Интегрированная среда для управления SQL. SSMS предоставляет средства для настройки, наблюдения и администрирования экземпляров SQL. С помощью SSMS можно развертывать, отслеживать и обновлять компоненты уровня данных, используемые вашими приложениями, а также создавать запросы и скрипты.",
-    "en": "SQL Server Management Studio - "
+    "en": "SQL Server Management Studio - integrated environment for managing any SQL infrastructure, from SQL Server to Azure SQL Database",
+    "ru": "SQL Server Management Studio - интегрированная среда для управления SQL. SSMS предоставляет средства для настройки, наблюдения и администрирования экземпляров SQL. С помощью SSMS можно развертывать, отслеживать и обновлять компоненты уровня данных, используемые вашими приложениями, а также создавать запросы и скрипты."
   },
   "Publisher": "Microsoft"
 }

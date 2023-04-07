@@ -7,8 +7,8 @@
   "Download_link_x64": "https://cdn.winscp.net/files/WinSCP-5.21.1-Setup.exe?secure=N6dUOt96_f_9mZ324ZfOsQ==,1656068432",
   "icon": "https://raw.githubusercontent.com/rprokhorov/SCCM-Software-Check/master/Applications/WinSCp/icon.png",
   "LocalizedDescription": {
-    "ru": "WinSCP — свободный графический клиент протоколов SFTP и SCP, предназначенный для Windows. Распространяется по лицензии GNU GPL. Обеспечивает защищённое копирование файлов между компьютером и серверами, поддерживающими эти протоколы.",
-    "en": "WinSCP - "
+    "en": "WinSCP - popular SFTP client and FTP client for Microsoft Windows! Copy file between a local computer and remote servers using FTP, FTPS, SCP, SFTP, WebDAV or S3 file transfer protocols.",
+    "ru": "WinSCP — свободный графический клиент протоколов SFTP и SCP, предназначенный для Windows. Распространяется по лицензии GNU GPL. Обеспечивает защищённое копирование файлов между компьютером и серверами, поддерживающими эти протоколы."
   },
   "Publisher": "Martin Prikryl"
 }

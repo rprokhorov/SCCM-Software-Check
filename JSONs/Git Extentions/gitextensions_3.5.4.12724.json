@@ -7,7 +7,7 @@
   "Download_link_x64": "https://github.com/gitextensions/gitextensions/releases/download/v3.5.4/GitExtensions-3.5.4.12724-65f01f399.msi",
   "icon": "https://raw.githubusercontent.com/rprokhorov/SCCM-Software-Check/master/Applications/Git%20Extensions/icon.png",
   "LocalizedDescription": {
-    "en": "Git Extensions - ",
+    "en": "Git Extensions - standalone UI tool for managing Git repositories",
     "ru": "Git Extensions - визуальный клиент системы управления версиями Git, позволяющий использовать Git без использования консольного интерфейса."
   },
   "Publisher": "Git Extensions Team"

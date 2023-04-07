@@ -7,7 +7,7 @@
   "Download_link_x64": "https://telerik-fiddler.s3.amazonaws.com/fiddler/FiddlerSetup.exe",
   "icon": "https://raw.githubusercontent.com/rprokhorov/SCCM-Software-Check/master/Applications/Fiddler/icon.png",
   "LocalizedDescription": {
-    "en": "Fiddler - ",
+    "en": "Fiddler - proxy debug tool used to log, inspect, and modify HTTP and HTTPS traffic between a computer and a web server.",
     "ru": "Fiddler – прокси, который работает с трафиком между Вашим компьютером и удалённым сервером, и позволяет инспектировать и менять его."
   },
   "Publisher": "Fiddler"

@@ -7,8 +7,8 @@
   "Download_link_x64": "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.4.3/npp.8.4.3.Installer.x64.exe",
   "icon": "https://raw.githubusercontent.com/rprokhorov/SCCM-Software-Check/master/Applications/Notepad%2B%2B/icon.png",
   "LocalizedDescription": {
-    "ru": "Notepad++ — свободный текстовый редактор с открытым исходным кодом для Windows с подсветкой синтаксиса большого количества языков программирования и разметки, а также языков описания аппаратуры VHDL и Verilog. Поддерживает открытие более 100 форматов.",
-    "en": "Notepad++ - "
+    "en": "Notepad++ - free source code editor and Notepad replacement that supports several languages.",
+    "ru": "Notepad++ — свободный текстовый редактор с открытым исходным кодом для Windows с подсветкой синтаксиса большого количества языков программирования и разметки, а также языков описания аппаратуры VHDL и Verilog. Поддерживает открытие более 100 форматов."
   },
   "Publisher": "Notepad++ Team"
 }

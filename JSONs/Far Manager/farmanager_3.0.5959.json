@@ -8,7 +8,7 @@
   "icon": "https://raw.githubusercontent.com/rprokhorov/SCCM-Software-Check/master/Applications/Far%20Manager/icon.png",
   "LocalizedDescription": {
     "ru": "FAR Manager — консольный файловый менеджер для операционных систем семейства Microsoft Windows.",
-    "en": "FAR Manager — "
+    "en": "FAR Manager — program for managing files and archives in Windows operating systems"
   },
   "Publisher": "Eugene Roshal & Far Group"
 }

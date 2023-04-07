@@ -7,7 +7,7 @@
   "Download_link_x64": "https://totalcommander.ch/win/tcmd1050x32_64.exe",
   "icon": "https://raw.githubusercontent.com/rprokhorov/SCCM-Software-Check/master/Applications/Total%20Commander/icon.png",
   "LocalizedDescription": {
-    "en": "Total Commander - ",
+    "en": "Total Commander - shareware file manager for Windows",
     "ru": "Total Commander — файловый менеджер с закрытым исходным кодом, работающий на платформах Microsoft Windows."
   },
   "Publisher": "Ghisler Software GmbH"
