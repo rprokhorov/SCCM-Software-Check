@@ -38,12 +38,12 @@ locals {
 }
 
 resource "azurerm_resource_group" "resource_group" {
-  name     = "${var.azurerm_resource_group.name}"
+  name     = var.azurerm_resource_group.name
   location = var.azurerm_resource_group.location
 }
 
 resource "azurerm_storage_account" "storage_account" {
-  name                     = "${var.azurerm_storage_account.name}"
+  name                     = var.azurerm_storage_account.name
   resource_group_name      = azurerm_resource_group.resource_group.name
   location                 = azurerm_resource_group.resource_group.location
   account_tier             = "Standard"
@@ -68,7 +68,7 @@ resource "azurerm_storage_blob" "tamopsblobs" {
 }
 
 resource "azurerm_app_service_plan" "app_service_plan" {
-  name                = "${var.azurerm_app_service_plan.name}"
+  name                = var.azurerm_app_service_plan.name
   resource_group_name = azurerm_resource_group.resource_group.name
   location            = azurerm_resource_group.resource_group.location
   kind                = "FunctionApp"
@@ -134,6 +134,29 @@ resource "azurerm_function_app_function" "httpTrigger" {
         "type" : "http",
         "direction" : "out",
         "name" : "Response"
+      }
+    ]
+  })
+}
+
+resource "azurerm_function_app_function" "timerTrigger" {
+  name            = "application"
+  function_app_id = azurerm_linux_function_app.function_app.id
+  language        = "PowerShell"
+
+  file {
+    name    = "run.ps1"
+    content = file("${path.module}/../azure_functions/timer_trigger.ps1")
+  }
+
+
+  config_json = jsonencode({
+    "bindings" : [
+      {
+        "name" : "Timer",
+        "type" : "timerTrigger",
+        "direction" : "in",
+        "schedule" : "0 */5 * * * *"
       }
     ]
   })
